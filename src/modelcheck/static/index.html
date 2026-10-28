@@ -19,6 +19,32 @@
       <div><p class="eyebrow">From predictions to evidence</p><h1 id="page-title">A second look.<br><em>A better experiment.</em></h1><p class="intro-copy">Compare model runs, investigate errors, and decide what comes next.<br>Measured evidence. A clear next step.</p></div>
       <aside class="intro-note" aria-label="Review principle"><span class="tiny-label">The review principle</span><p>Good results are useful.<br><strong>Trustworthy results are better.</strong></p><span>Binary classification · Evidence-linked findings</span></aside>
     </section>
+    <details id="how-it-works" class="how-it-works">
+      <summary><span class="guide-title">How ModelCheck works</span> <span class="guide-subtitle">From prediction files to an experiment you approve.</span></summary>
+      <div class="guide-content">
+        <p class="guide-intro">Use ModelCheck to understand where a binary classifier succeeds, where it misses examples, and what to investigate next. Start with the synthetic samples or bring prediction exports with labels 0 and 1.</p>
+        <ol class="workflow-steps">
+          <li><h2>Bring your results</h2><p>The manifest describes each example, its true label, split and source. Add baseline predictions and, optionally, candidate predictions to compare two runs.</p></li>
+          <li><h2>Check the measured evidence</h2><p>Python tools check coverage and data issues, calculate metrics, and inspect source slices. The Model Context Protocol (MCP) connects the reviewer to these tools. Open <strong>Activity &amp; evidence</strong> to see the calculations behind a finding.</p></li>
+          <li><h2>Ask the review agent</h2><p>Ask a question such as “Where did recall get worse?” The agent follows a review checklist, chooses read-only tools, and cites their evidence in its findings. Model calls and tool use have execution limits.</p></li>
+          <li><h2>Choose the next experiment</h2><p>Draft a follow-up with one change and a success criterion based on validation data. Review the exact specification: approval saves a downloadable JSON plan; rejection saves no file. Training is a separate step.</p></li>
+        </ol>
+        <div class="guide-reference">
+          <section aria-labelledby="guide-modes"><h2 id="guide-modes">Choose a review mode</h2><dl>
+            <div><dt>Load &amp; inspect sample / Import &amp; inspect</dt><dd>Calculates evidence through local tools. Works without an API key.</dd></div>
+            <div><dt>View recorded AI review</dt><dd>Replays a captured v1 answer on the comparison sample. Sends no model request.</dd></div>
+            <div><dt>Run AI review</dt><dd>Starts a new v2 investigation through OpenRouter. Requires a configured key and available provider quota.</dd></div>
+          </dl></section>
+          <section aria-labelledby="guide-metrics"><h2 id="guide-metrics">Read the metrics</h2><dl>
+            <div><dt>Accuracy</dt><dd>The share of test examples classified correctly.</dd></div>
+            <div><dt>Positive recall</dt><dd>The share of actual positives the model finds. Lower recall means more missed positives, or false negatives.</dd></div>
+            <div><dt>F1 score</dt><dd>A combined measure of precision and recall. Precision is the share of positive predictions that are correct.</dd></div>
+          </dl></section>
+        </div>
+        <p class="guide-example"><strong>Try the quantization sample:</strong> overall accuracy falls from 90% to 85%, while web recall falls from 90% to 50%. Source slices reveal a much larger change than the headline score.</p>
+        <p class="guide-boundary"><strong>Data and interpretation:</strong> use public or synthetic exports. Files and saved plans stay local; live AI review sends your question, bounded tool results and run descriptions to OpenRouter. Source differences are descriptive, and exported predictions cannot verify training or preprocessing claims.</p>
+      </div>
+    </details>
     <div id="status-message" class="sr-only" role="status" aria-atomic="true"></div>
     <div id="error-message" class="sr-only" role="alert" aria-atomic="true"></div>
     <div id="notice" class="notice" tabindex="-1" hidden></div>

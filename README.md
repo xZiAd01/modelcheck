@@ -17,6 +17,8 @@ uv run modelcheck serve
 
 Open <http://127.0.0.1:8787>. The English interface supports built-in synthetic samples and CSV/JSON uploads. Inspection, manual proposals, approvals and recorded review work without an API key. Live AI review uses OpenRouter. Verified runtime: Python 3.12.13 on macOS with locked dependencies. Evaluation locking uses POSIX advisory locks.
 
+Expand **How ModelCheck works** above the workspace for the workflow, review modes, metric definitions and data-handling explanation.
+
 ```sh
 uv run pytest -q
 uv run modelcheck ask "Compare both runs overall and by source."
