@@ -1,23 +1,85 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ModelCheck · Experiment review</title><link rel="stylesheet" href="/static/style.css"><script src="/static/app.js" defer></script></head>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#f5f6f2">
+  <title>ModelCheck · Experiment review</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <script src="/static/app.js" defer></script>
+</head>
 <body>
-<header class="topbar"><a class="brand" href="/"><span class="brand-mark">m<span>✓</span></span>ModelCheck<span class="brand-divider"></span><span class="subbrand">EXPERIMENT WORKSPACE</span></a><div class="top-actions"><span class="local-tag"><i></i> LOCAL SESSION</span><button id="reset" class="text-button">Reset session ↗</button></div></header>
-<main>
-<section class="intro"><div><p class="eyebrow">FROM PREDICTIONS TO EVIDENCE</p><h1>A second look.<br><em>A better experiment.</em></h1><p class="intro-copy">Compare model runs, investigate the errors, and decide what comes next.<br>Your data does the measuring. You keep the final say.</p></div><aside class="intro-note"><span class="tiny-label">THE REVIEW PRINCIPLE</span><p>Good results are useful.<br><strong>Trustworthy results are better.</strong></p><span>Binary classification · Evidence-linked findings</span></aside></section>
-<div id="notice" class="notice" role="status" hidden></div>
-<section class="workspace">
-<aside class="intake panel">
-<div class="panel-heading"><span class="step">01</span><div><h2>Your experiment</h2><p>Start with a sample or bring your own.</p></div></div>
-<div class="tabs" role="tablist"><button id="sample-tab" role="tab" aria-selected="true">Sample scenarios</button><button id="upload-tab" role="tab" aria-selected="false">Upload files</button></div>
-<div id="sample-pane"><label for="scenario" class="field-label">CHOOSE A SCENARIO</label><select id="scenario"></select><p id="scenario-description" class="help"></p><div class="sample-label">SYNTHETIC DATA <span>· No real model claims</span></div><button id="load-sample" class="button secondary full">Load & inspect sample <span>↗</span></button><button id="replay-review" class="text-button download-example">View recorded AI review ↗</button><br><button id="download-sample" class="text-button download-example">Download example files ↓</button></div>
-<div id="upload-pane" hidden><p class="help">CSV exports only. Labels must be 0/1. Test split is evaluated. Use public or synthetic data.</p><label class="file-label">Manifest CSV <span>required</span><input type="file" id="manifest-file" accept=".csv,text/csv"></label><label class="file-label">Baseline predictions CSV <span>required</span><input type="file" id="baseline-file" accept=".csv,text/csv"></label><label class="file-label">Candidate predictions CSV <span>optional</span><input type="file" id="candidate-file" accept=".csv,text/csv"></label><label class="file-label">Run metadata JSON <span>optional</span><input type="file" id="metadata-file" accept=".json,application/json"></label><details class="format-help"><summary>Required columns & limits</summary><p>Manifest: sample_id, split, source, label. Optional group_id, content_hash.</p><p>Predictions: sample_id, predicted_label. Optional score (probability of class 1).</p><p>Splits: train, validation, test. 1 MiB per file; 10,000 rows. Duplicate/misaligned records are flagged.</p><p>Metadata: {"runs":[{"name":"Baseline","threshold_selection_split":"validation","preprocessing":"…"}]}</p></details><button id="import-files" class="button secondary full">Import & inspect <span>↗</span></button></div>
-<div class="divider"></div><label for="question" class="field-label">WHAT SHOULD WE INVESTIGATE?</label><textarea id="question" rows="5">Compare both runs overall and by source. Explain the largest measured difference.</textarea><div class="prompt-chips"><button data-prompt="Compare aggregate metrics and source slices. Is the candidate consistently better?">Compare runs</button><button data-prompt="Inspect the manifest for sample, group and exact-hash overlap across splits. Explain what cannot be established.">Check overlap</button><button data-prompt="Investigate false negatives by source. Propose one validation-only follow-up experiment for approval.">Inspect errors</button></div>
-<button id="run-agent" class="button primary full" disabled>Run AI review <span>→</span></button><p id="provider-status" class="provider-status">Checking live model configuration…</p><details class="privacy-note"><summary>Where does my data go?</summary><p>Files and saved specifications stay in this local workspace. AI review sends your question, bounded tool results and run descriptions to OpenRouter. Do not upload confidential or personal data.</p></details>
-</aside>
-<div class="results">
-<section class="panel evidence-panel"><div class="panel-heading spread"><div class="heading-inline"><span class="step">02</span><div><h2>The evidence</h2><p id="dataset-caption">Load a scenario to inspect its results.</p></div></div><span id="validation-badge" class="badge neutral">NO DATA YET</span></div><div id="validation-findings"></div><div id="metric-cards" class="metric-grid"><div class="metric-placeholder">01 <span>Load data</span></div><div class="metric-placeholder">02 <span>Measure the difference</span></div><div class="metric-placeholder">03 <span>Inspect the evidence</span></div></div><div id="source-table"></div></section>
-<section class="panel review-panel"><div class="panel-heading spread"><div class="heading-inline"><span class="step">03</span><div><h2>The review</h2><p id="review-caption">A clear conclusion starts with a traceable calculation.</p></div></div><span id="review-mode" class="badge neutral">AWAITING INSPECTION</span></div><div id="review-content" class="empty-state"><span class="empty-symbol">⌁</span><h3>Find the story behind the score.</h3><p>Load a sample for deterministic evidence, then run an AI review<br>to investigate it with the agent.</p></div><div class="review-footer"><button id="draft-proposal" class="text-button" disabled>＋ Draft a follow-up</button><div><button id="export-json" class="text-button" disabled>JSON ↓</button><button id="export-md" class="text-button" disabled>Markdown ↓</button></div></div><details id="trace-details" class="trace-details"><summary>Activity & evidence receipt <span id="trace-count">0 events</span></summary><div id="trace-log"></div><div id="evidence-receipt"></div></details></section>
-<section id="proposal-section" class="panel proposal-panel" hidden><div class="panel-heading"><span class="step">04</span><div><h2>Your next experiment</h2><p>Nothing is saved until you approve the exact specification.</p></div></div><div id="proposal-editor" hidden><label class="field-label" for="objective">OBJECTIVE</label><input id="objective" value="Investigate candidate false negatives without tuning on the test set"><label class="field-label" for="change">ONE CHANGE TO TRY</label><textarea id="change" rows="3">Compare a less aggressive quantization setting on a separate validation set, sliced by source.</textarea><label class="field-label" for="criterion">SUCCESS CRITERION</label><input id="criterion" value="Improve validation recall on the affected source without reducing validation precision"><p class="help">Selection rule: choose the change using validation data only. Keep the test set held out.</p><button id="request-approval" class="button secondary">Prepare exact specification →</button></div><div id="proposal-content"></div></section>
-</div></section>
-<footer><span>ModelCheck <span class="footer-dot">/</span> Built to question the result.</span><span>Portfolio prototype · SDAIA Agentic AI capstone · Synthetic samples</span></footer>
-</main></body></html>
+  <a class="skip-link" href="#main">Skip to workspace</a>
+  <header class="topbar">
+    <a class="brand" href="/" aria-label="ModelCheck home"><span class="brand-mark" aria-hidden="true">m<span>✓</span></span>ModelCheck<span class="brand-divider" aria-hidden="true"></span><span class="subbrand">Experiment workspace</span></a>
+    <div class="top-actions"><span class="local-tag"><i aria-hidden="true"></i>Local session</span><button id="reset" class="text-button" type="button">Reset session <span aria-hidden="true">↗</span></button></div>
+  </header>
+  <main id="main" tabindex="-1">
+    <section class="intro" aria-labelledby="page-title">
+      <div><p class="eyebrow">From predictions to evidence</p><h1 id="page-title">A second look.<br><em>A better experiment.</em></h1><p class="intro-copy">Compare model runs, investigate errors, and decide what comes next.<br>Measured evidence. A clear next step.</p></div>
+      <aside class="intro-note" aria-label="Review principle"><span class="tiny-label">The review principle</span><p>Good results are useful.<br><strong>Trustworthy results are better.</strong></p><span>Binary classification · Evidence-linked findings</span></aside>
+    </section>
+    <div id="status-message" class="sr-only" role="status" aria-atomic="true"></div>
+    <div id="error-message" class="sr-only" role="alert" aria-atomic="true"></div>
+    <div id="notice" class="notice" tabindex="-1" hidden></div>
+    <div class="workspace">
+      <aside class="intake panel" aria-labelledby="intake-heading">
+        <div class="panel-heading"><span class="step" aria-hidden="true">01</span><div><h2 id="intake-heading">Your experiment</h2><p>Choose a sample or upload prediction files.</p></div></div>
+        <div class="tabs" role="tablist" aria-label="Experiment input">
+          <button id="sample-tab" type="button" role="tab" aria-selected="true" aria-controls="sample-pane" tabindex="0">Sample scenarios</button>
+          <button id="upload-tab" type="button" role="tab" aria-selected="false" aria-controls="upload-pane" tabindex="-1">Upload files</button>
+        </div>
+        <div id="sample-pane" role="tabpanel" aria-labelledby="sample-tab">
+          <label for="scenario" class="field-label">Choose a scenario</label>
+          <select id="scenario" name="scenario" aria-describedby="scenario-description"></select>
+          <p id="scenario-description" class="help"></p>
+          <p class="sample-label">Synthetic data <span>· Demonstration only</span></p>
+          <button id="load-sample" type="button" class="button secondary full">Load & inspect sample <span aria-hidden="true">↗</span></button>
+          <div class="sample-actions"><button id="replay-review" type="button" class="text-button">View recorded AI review <span aria-hidden="true">↗</span></button><button id="download-sample" type="button" class="text-button">Download example files <span aria-hidden="true">↓</span></button></div>
+        </div>
+        <div id="upload-pane" role="tabpanel" aria-labelledby="upload-tab" hidden>
+          <form id="upload-form" novalidate>
+            <p class="help">Public or synthetic CSV exports. Labels: 0/1. Metrics use the test split.</p>
+            <label class="file-label" for="manifest-file">Manifest CSV <span>required</span></label><input type="file" id="manifest-file" name="manifest" accept=".csv,text/csv" required aria-describedby="upload-limits manifest-file-error"><p id="manifest-file-error" class="field-error" hidden></p>
+            <label class="file-label" for="baseline-file">Baseline predictions CSV <span>required</span></label><input type="file" id="baseline-file" name="baseline" accept=".csv,text/csv" required aria-describedby="upload-limits baseline-file-error"><p id="baseline-file-error" class="field-error" hidden></p>
+            <label class="file-label" for="candidate-file">Candidate predictions CSV <span>optional</span></label><input type="file" id="candidate-file" name="candidate" accept=".csv,text/csv" aria-describedby="upload-limits candidate-file-error"><p id="candidate-file-error" class="field-error" hidden></p>
+            <label class="file-label" for="metadata-file">Run metadata JSON <span>optional</span></label><input type="file" id="metadata-file" name="metadata" accept=".json,application/json" aria-describedby="upload-limits metadata-file-error"><p id="metadata-file-error" class="field-error" hidden></p>
+            <p id="upload-limits" class="help">Up to 1 MiB per file and 10,000 rows.</p>
+            <details class="format-help"><summary>Columns & file format</summary><p>Manifest: sample_id, split, source, label. Optional: group_id, content_hash.</p><p>Predictions: sample_id, predicted_label. Optional: score (probability of class 1).</p><p>Splits: train, validation, test. Duplicate and misaligned records are flagged.</p><p>Metadata: <code>{"runs":[{"name":"Baseline","threshold_selection_split":"validation","preprocessing":"…"}]}</code></p></details>
+            <button id="import-files" type="submit" class="button secondary full">Import & inspect <span aria-hidden="true">↗</span></button>
+          </form>
+        </div>
+        <form id="review-form" class="investigation" novalidate>
+          <label for="question" class="field-label">Investigation question</label><textarea id="question" name="question" rows="4" required maxlength="4000" aria-describedby="question-error">Compare both runs overall and by source. Explain the largest measured difference.</textarea><p id="question-error" class="field-error" hidden></p>
+          <div class="prompt-chips" aria-label="Example questions"><button type="button" data-prompt="Compare aggregate metrics and source slices. Is the candidate consistently better?">Compare runs</button><button type="button" data-prompt="Inspect the manifest for sample, group and exact-hash overlap across splits. Explain what cannot be established.">Check overlap</button><button type="button" data-prompt="Investigate false negatives by source. Propose one validation-only follow-up experiment for approval.">Inspect errors</button></div>
+          <button id="run-agent" type="submit" class="button primary full" disabled aria-describedby="provider-status">Run AI review <span aria-hidden="true">→</span></button><p id="provider-status" class="provider-status">Checking live model configuration…</p>
+        </form>
+        <details class="privacy-note"><summary>Where does my data go?</summary><p>Files and saved specifications stay in this local workspace. Live AI review sends the question, bounded tool results and run descriptions to OpenRouter. Use public or synthetic data.</p></details>
+      </aside>
+      <div class="results">
+        <section class="panel evidence-panel" aria-labelledby="evidence-heading">
+          <div class="panel-heading spread"><div class="heading-inline"><span class="step" aria-hidden="true">02</span><div><h2 id="evidence-heading">The evidence</h2><p id="dataset-caption">Load a scenario to inspect its results.</p></div></div><span id="validation-badge" class="badge neutral">No data yet</span></div>
+          <div id="validation-findings"></div><div id="metric-cards" class="metric-grid"><p class="help">Load a sample or upload files to calculate metrics.</p></div><div id="source-table"></div>
+        </section>
+        <section class="panel review-panel" aria-labelledby="review-heading">
+          <div class="panel-heading spread"><div class="heading-inline"><span class="step" aria-hidden="true">03</span><div><h2 id="review-heading" tabindex="-1">The review</h2><p id="review-caption">A conclusion linked to its calculations.</p></div></div><span id="review-mode" class="badge neutral">Awaiting inspection</span></div>
+          <div id="review-content" class="empty-state"><h3>Review the measured difference.</h3><p>Load a sample for calculated evidence, then run an AI investigation.</p></div>
+          <div class="review-footer"><button id="draft-proposal" type="button" class="text-button" disabled><span aria-hidden="true">＋</span> Draft a follow-up</button><div role="group" aria-label="Export review"><button id="export-json" type="button" class="text-button" disabled aria-label="Export review as JSON">JSON <span aria-hidden="true">↓</span></button><button id="export-md" type="button" class="text-button" disabled aria-label="Export review as Markdown">Markdown <span aria-hidden="true">↓</span></button></div></div>
+          <details id="trace-details" class="trace-details"><summary>Activity & evidence <span id="trace-count">0 events</span></summary><div id="trace-log"></div><div id="evidence-receipt"></div></details>
+        </section>
+        <section id="proposal-section" class="panel proposal-panel" aria-labelledby="proposal-heading" hidden>
+          <div class="panel-heading"><span class="step" aria-hidden="true">04</span><div><h2 id="proposal-heading" tabindex="-1">Your next experiment</h2><p>Review the exact specification before saving.</p></div></div>
+          <form id="proposal-form" hidden novalidate>
+            <label class="field-label" for="objective">Objective</label><input id="objective" name="objective" type="text" required minlength="5" maxlength="500" value="Investigate candidate false negatives without tuning on the test set" aria-describedby="objective-error"><p id="objective-error" class="field-error" hidden></p>
+            <label class="field-label" for="change">One change to try</label><textarea id="change" name="change" rows="3" required minlength="5" maxlength="1000" aria-describedby="change-error">Compare a less aggressive quantization setting on a separate validation set, sliced by source.</textarea><p id="change-error" class="field-error" hidden></p>
+            <label class="field-label" for="criterion">Success criterion</label><input id="criterion" name="success_criterion" type="text" required minlength="5" maxlength="500" value="Improve validation recall on the affected source without reducing validation precision" aria-describedby="criterion-error"><p id="criterion-error" class="field-error" hidden></p>
+            <p class="help">Selection rule: choose the change using validation data only. Keep the test set held out.</p><button id="request-approval" type="submit" class="button secondary">Prepare exact specification <span aria-hidden="true">→</span></button>
+          </form>
+          <div id="proposal-content"></div>
+        </section>
+      </div>
+    </div>
+    <footer><span>ModelCheck · Experiment review</span><span>SDAIA Agentic AI capstone · Synthetic samples</span></footer>
+  </main>
+</body>
+</html>
