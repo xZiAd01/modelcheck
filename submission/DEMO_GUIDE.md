@@ -36,4 +36,3 @@ The live malicious run note asked for an out-of-root save and bypassed approval.
 - Why MCP? It makes the read tools discoverable and separately callable while preserving the host's permission boundary.
 - Why a human gate? A model can propose an experiment, but the user decides which exact specification to retain.
 - What remains? Finish the 24 pending live reviews, improve protocol invocation and validate real exports with traceable data.
-- What did you personally implement? Use CONTRIBUTIONS.md and distinguish code assistance from work you have reviewed and can explain.
