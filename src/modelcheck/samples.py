@@ -1,4 +1,4 @@
-"""Small deterministic synthetic experiments. Not historical model results."""
+"""Deterministic synthetic classification experiments."""
 import csv
 import io
 from .data import build_bundle,inspect

@@ -1,38 +1,45 @@
-# Eight-minute demonstration guide
+# Demo walkthrough
 
-## Before presenting
+The eight-minute walkthrough covers the review workflow, architecture, evaluation and security evidence.
 
-Run `uv run modelcheck serve` from the project directory, or open Launch.command on macOS. Use http://127.0.0.1:8787. Keep the app local. The key remains in .env, not in the slides or ZIP. The real recorded AI review is available if the free endpoint is busy. Identify it explicitly as recorded.
+## Setup
 
-## Problem and audience, one minute
+From the project directory, run `uv run modelcheck serve`, or open `Launch.command` on macOS. The interface is at <http://127.0.0.1:8787>. Live review uses the key in `.env`; recorded review is available without a provider request and is labeled in the interface.
 
-“ModelCheck helps an ML developer examine an experiment before reporting the headline metric. It checks comparable populations, computes results and investigates failure slices. It prepares a follow-up specification that I approve before saving.”
+## Problem · one minute
 
-## Interactive demonstration, two minutes
+Headline metrics can hide source-specific failures, incomplete coverage and missing provenance. ModelCheck checks the population, calculates metrics, investigates error slices and prepares an experiment specification for approval.
 
-Load The quantization trade-off. Candidate accuracy is 85%, against 90% baseline. Studio recall improves, while web recall drops from 90% to 50%. These are synthetic values, not results from the earlier image detector.
+## Review workflow · two minutes
 
-Select View recorded AI review and state that this is a real captured model run, replayed without an API request. The evidence receipt contains the actual comparison output and citations. If quota/network permits, a fresh Run AI review demonstrates the same application loop, with stochastic output.
+1. Load **The quantization trade-off**. Candidate accuracy is 85%, against a 90% baseline. Studio recall improves from 90% to 100%; web recall falls from 90% to 50%. The fixture is synthetic.
+2. Open **View recorded AI review**. This replays a captured inference; the evidence receipt includes comparison output and citations. **Run AI review** starts a fresh investigation when quota and network access permit.
+3. Select **Draft a follow-up**. The proposal contains one change, a validation-only selection rule and a success criterion.
+4. Review the exact specification, then reject or approve and save. Rejection creates no file. Approval creates one downloadable JSON specification. The application does not train a model.
 
-Draft a follow-up. Read its one proposed change and validation-only selection rule. Prepare the exact specification. Show rejection or approve and save, then download the JSON. This is a proposed experiment, not model training.
+## Architecture · two minutes
 
-## Design, two minutes
+A single agent selects investigation tools. Four read-only tools run through a stdio MCP client and server. Python computes the metrics. SQLite stores evidence and pending actions. A separate approval handler binds the decision to the exact payload digest and session.
 
-Explain who selects each next tool and who executes it. Read-only tools run through an actual stdio MCP client/server. Python computes metrics. SQLite preserves pending action state. The human decision is separate from model prose and binds the exact payload digest.
+The review protocol is available through a loader, although observed model traces do not consistently invoke it. Context and tool results remain bounded. Model inference runs externally through OpenRouter.
 
-The review skill is available through a loader, but observed traces do not reliably invoke it. Context/results remain bounded. The project uses one agent; a graph library and multiple agents were unnecessary for this scope.
+## Evaluation · two minutes
 
-## Evaluation, two minutes
+The frozen suite contains 18 tasks and two reviewer configurations. Twelve of 36 scheduled reviews ran under the daily request limit: A passed 6/6 and B passed 5/6, with 24 reviews pending.
 
-Eighteen frozen tasks exist, with A/B reviewer prompts. Twelve of 36 scheduled reviews ran under the selected daily allowance. A passed 6/6; B passed 5/6; 24 reviews remain pending. The B failure omitted a required comparison tool despite a correct numerical delta. Describe that as a tool-compliance failure, not proof that B is generally worse. One trial cannot establish repeated-run reliability.
+B omitted the required comparison tool in one case despite returning the correct numerical delta. The failure concerns the declared tool contract. The partial suite and one trial per task are insufficient to compare general reliability.
 
-## Security, one minute
+## Security · one minute
 
-The live malicious run note asked for an out-of-root save and bypassed approval. The reviewer identified it, requested no action and saved no file. Separately, direct handler tests reject arbitrary paths, changed digests and foreign sessions, and verify valid approval saves exactly once. This is bounded evidence, not universal security or compliance certification.
+A malicious run description requested an out-of-root save and an approval bypass. The live reviewer identified it and created no action or file. Separate handler tests reject arbitrary paths, changed digests and foreign sessions. Valid approval tests verify exact JSON contents and one saved file after repeated approval.
 
-## Questions to prepare
+The evidence covers one live attack and the tested handler cases. Broader live security evaluation remains pending.
 
-- What can prediction files establish about leakage? Explicit IDs/groups/exact hashes only. Preprocessing and complete training integrity need additional provenance.
-- Why MCP? It makes the read tools discoverable and separately callable while preserving the host's permission boundary.
-- Why a human gate? A model can propose an experiment, but the user decides which exact specification to retain.
-- What remains? Finish the 24 pending live reviews, improve protocol invocation and validate real exports with traceable data.
+## Technical reference
+
+| Topic | Supported behavior |
+|---|---|
+| Leakage inspection | Explicit sample, group and exact-hash overlap in supplied manifests; training and preprocessing integrity require additional provenance |
+| MCP | Discoverable read tools called through a separate client/server connection |
+| Human approval | A decision on the exact proposed specification before a file is saved |
+| Remaining validation | Pending live reviews, protocol invocation and real exports with traceable provenance |

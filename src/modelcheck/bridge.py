@@ -1,4 +1,4 @@
-"""A real MCP connection, kept on the application's async event loop."""
+"""Persistent stdio MCP connection on the application's async event loop."""
 import json
 import os
 import sys

@@ -1,4 +1,4 @@
-"""ModelCheck, a local experiment review assistant."""
+"""ModelCheck: local classification experiment review."""
 
 __version__ = "0.1.0"
 

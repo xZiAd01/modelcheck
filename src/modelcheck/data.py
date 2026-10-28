@@ -1,4 +1,4 @@
-"""Pure parsing and arithmetic. No LLM can change these calculations."""
+"""Parsing, validation and classification metrics."""
 from __future__ import annotations
 
 import csv

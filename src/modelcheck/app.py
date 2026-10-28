@@ -1,4 +1,4 @@
-"""Local same-origin UI/API. Never exposes an API credential to the page."""
+"""Local same-origin UI and API with server-side provider credentials."""
 from __future__ import annotations
 import asyncio
 from contextlib import asynccontextmanager
@@ -112,7 +112,7 @@ def create_app(root=None):
 
     @app.get("/healthz")
     async def health():
-        # Re-read a newly entered local key without restarting the app.
+        # Refresh local configuration without restarting the service.
         load_dotenv(PROJECT/".env",override=True)
         return {"ok":True,"mcp_ready":bridge.client is not None,"api_key_configured":bool(os.getenv("OPENROUTER_API_KEY")),
                 "model":os.getenv("MODELCHECK_MODEL","nvidia/nemotron-3.5-lightning:free"),"mode":"local","version":"0.1.0"}

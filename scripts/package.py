@@ -1,4 +1,4 @@
-"""Package only portable source and synthetic evidence. Never include credentials/state."""
+"""Package portable source and synthetic evidence, excluding local state and credentials."""
 from pathlib import Path
 import hashlib
 import json

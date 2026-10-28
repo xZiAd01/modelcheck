@@ -1,4 +1,4 @@
-"""Controlled provider tests are contract tests, never reported as live evals."""
+"""Provider contract tests using controlled responses."""
 import asyncio
 import json
 from types import SimpleNamespace

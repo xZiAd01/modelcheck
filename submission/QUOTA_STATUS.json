@@ -5,5 +5,5 @@
     "limit": 50,
     "remaining": 5
   },
-  "policy": "User selected existing daily allowance; no purchases or paid inference; reserve remaining capacity for demo."
+  "policy": "Free-model daily quota; five requests reserved for the demo."
 }

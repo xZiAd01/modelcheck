@@ -1,23 +1,21 @@
 # ModelCheck
 
-An experiment-review agent for developers working with binary classifiers. It calculates results through MCP tools, investigates errors, and prepares a follow-up specification for human approval.
+An experiment-review agent for binary classifiers. ModelCheck calculates metrics through MCP tools, investigates error slices, and prepares a follow-up specification for human approval.
 
-**SDAIA capstone track:** 2, domain harness. **Presenter:** Zeyad Alghamdi. **Delivery:** local browser, English, built-in synthetic examples and CSV/JSON uploads.
+SDAIA Agentic AI capstone · Track 2: domain harness · Zeyad Alghamdi
 
-## Run
+## Run locally
 
 ```sh
 git clone https://github.com/xZiAd01/modelcheck.git
 cd modelcheck
 uv sync --locked
 cp .env.example .env
-# Add OPENROUTER_API_KEY locally. Never commit or paste it in chat.
+# Set OPENROUTER_API_KEY in .env for live AI review.
 uv run modelcheck serve
 ```
 
-Verified runtime: Python 3.12.13 with locked dependencies.
-
-Open <http://127.0.0.1:8787>. Data inspection, upload, manual proposal/approval and recorded review work without an API key. Live AI review uses OpenRouter. If the port is already occupied by the existing ModelCheck process, use the running page rather than starting a second copy.
+Open <http://127.0.0.1:8787>. The English interface supports built-in synthetic samples and CSV/JSON uploads. Inspection, manual proposals, approvals and recorded review work without an API key. Live AI review uses OpenRouter. Verified runtime: Python 3.12.13 with locked dependencies.
 
 ```sh
 uv run pytest -q
@@ -26,44 +24,38 @@ uv run modelcheck eval --config A B --trials 1
 uv run modelcheck check
 ```
 
-Evaluation resumes previously pending tasks with the same suite/configuration metadata. It reserves at least five provider requests for the demo and refuses to start a review unless its eight-request maximum also fits. Existing executed rows stay unchanged. `check` reports incomplete if live checks cannot run. No command purchases credits or enables paid inference.
+Evaluation resumes pending tasks with matching suite and configuration metadata. It reserves five provider requests for the demo and starts a review only when its eight-request maximum also fits. Executed rows remain unchanged. `check` reports an incomplete status when live checks cannot run.
 
-## Demonstration
+## Demo workflow
 
-1. Load **The quantization trade-off**. Inspect candidate accuracy 85%, recall 75% and F1 83.33% against the 90% baseline. These are synthetic examples.
-2. The studio source's recall rises from 90% to 100%, while web recall falls from 90% to 50%. This describes the difference; it does not establish a causal reason.
-3. Use **View recorded AI review** for a real captured model run, labeled as replay, or run a fresh AI review if quota permits.
-4. Select **Draft a follow-up**, inspect the exact specification, then approve or reject. Approval saves exactly one JSON file; rejection saves none.
-5. Use **Upload files** with the supplied examples, export the report, or inspect the overlap/missing-prediction scenarios.
+1. Load **The quantization trade-off**: candidate accuracy is 85%, recall 75% and F1 83.33%, against a 90% baseline for all three metrics.
+2. Inspect source slices: studio recall rises from 90% to 100%; web recall falls from 90% to 50%.
+3. Select **View recorded AI review**, or **Run AI review** for a fresh investigation.
+4. Select **Draft a follow-up**, review the exact specification, then approve or reject. Approval saves one JSON file; rejection saves none.
+5. Upload the supplied example files, export the report, or explore overlap and missing-prediction scenarios.
 
-Recorded review is a genuine synthetic-data inference, not a fabricated transcript. Replay creates a new session-scoped view without a model request. Its usage figures describe the original run.
+All sample metrics describe synthetic data. Source differences are descriptive and do not establish causality. Recorded review replays a captured inference in a new session without a provider request; its usage figures refer to the original run.
 
-## Data format
+## Data contract
 
-Upload one manifest CSV, one baseline prediction CSV and optionally a candidate CSV and metadata JSON. Example files live in `examples/`.
+Upload one manifest CSV, one baseline prediction CSV, and optionally a candidate CSV and metadata JSON. Sample files are in `examples/`.
 
 | File | Required columns | Optional columns |
 |---|---|---|
 | Manifest | sample_id, split, source, label | group_id, content_hash |
 | Predictions | sample_id, predicted_label | score |
 
-Labels are 0/1; scores, when present, are finite probabilities of class 1. Manifest splits are train/validation/test; metrics use test examples. UTF-8 CSV with a header, 1 MiB per file, at most 10,000 rows and 4 MiB per request. Metadata uses `{"runs":[{"name":"Baseline","model_version":"v1","threshold_selection_split":"validation","preprocessing":"declaration"}]}`.
+Labels are 0/1. Optional scores are finite probabilities of class 1. Splits are train/validation/test; metrics use test examples. Limits: UTF-8 CSV with a header, 1 MiB per file, 10,000 rows and 4 MiB per request. Metadata example:
 
-The key `(split,sample_id)` is unique. Cross-split sample IDs are allowed so the inspector can identify overlap. Conflicting labels, duplicate records/predictions and out-of-manifest prediction IDs quarantine metrics. Missing predictions remain explicit, partial metrics show coverage, and comparisons require full matching populations. Null ratios have zero denominators and must not be read as zero.
+```json
+{"runs":[{"name":"Baseline","model_version":"v1","threshold_selection_split":"validation","preprocessing":"declaration"}]}
+```
 
-Source comparisons show at most 20 slices, explicitly flagged when truncated. Use source-filtered metric calls for additional sources. No raw images, arbitrary files, archives, pickle or shell commands are supported.
+The key `(split,sample_id)` is unique. Cross-split sample IDs are allowed for overlap inspection. Conflicting labels, duplicate records or predictions, and out-of-manifest prediction IDs quarantine metrics. Partial metrics include coverage; comparisons require complete matching populations. Null ratios indicate zero denominators.
 
-## Design across the ladder
+Source comparisons show up to 20 slices and flag truncation. Source-filtered metric calls cover additional sources. Supported inputs exclude raw images, archives, pickle and executable files.
 
-| Layer | Implementation | Reason |
-|---|---|---|
-| Prompt | Typed tools, constrained report, trust boundaries | Tie explanations to measured evidence |
-| Context | Review protocol skill/loader, bounded valid JSON and complete-round compaction | Retrieve guidance without raw CSV context |
-| Harness | Session-owned IDs, allowlisted reads, approval-bound save, budgets, audit | Keep model suggestions within application controls |
-| Loop | One explicit tool loop, 8-request/16-tool maximum | Investigations need different tool sequences |
-| Graph | Pending action state in SQLite | Approval can happen later without rerunning inference |
-
-No LangGraph or additional agents. SQLite stores durable approval state; this does not imply a fully checkpointed agent graph. The runtime provides a protocol loader; observed model traces do not consistently invoke it, a documented context-following limitation.
+## Architecture
 
 ```mermaid
 flowchart LR
@@ -72,54 +64,70 @@ flowchart LR
   L --> P[OpenRouter free model]
   L --> C[MCP client]
   C --> T[Read-only stdio MCP tools]
-  T --> D[Session-owned synthetic or uploaded exports]
-  L --> Q[Pending exact specification]
-  U --> H[Human approve or reject]
+  T --> D[Session-owned experiment exports]
+  L --> Q[Pending specification]
+  U --> H[Approve or reject]
   H --> Q
   Q --> W[Validated idempotent save]
 ```
 
-## Tools and permissions
+| Layer | Implementation |
+|---|---|
+| Prompt | Typed tools, structured reports, evidence citations and trust boundaries |
+| Context | Review protocol loader, bounded JSON results and complete-round compaction |
+| Harness | Session-owned IDs, allowlisted reads, approval-bound saves, budgets and audit events |
+| Loop | One agent with an eight-request and 16-tool limit |
+| Persistence | SQLite evidence, reviews and durable pending actions |
 
-| Tool | Read/write | MCP | Approval |
-|---|---|---|---|
-| inspect_manifest | Read | Yes | No |
-| compute_metrics | Read | Yes | No |
-| compare_runs | Read | Yes | No |
-| inspect_error_slice | Read | Yes | No |
-| load_review_protocol | Read | Local | No |
-| save_experiment_spec | Pending proposal then write | Local | Required for the file save |
+The protocol loader is available, but observed traces do not consistently invoke it. Persistence covers approval state; the agent loop has no full graph checkpointing.
 
-The API can also create a human-authored proposal after deterministic inspection. UI, CLI and evaluations share the same calculations and write guard. The model cannot select the output path or alter ownership. Approval binds a canonical digest, session and one-hour expiry. Repeated approval returns the original saved file.
+| Tool | Transport | Permission |
+|---|---|---|
+| inspect_manifest | MCP | Read |
+| compute_metrics | MCP | Read |
+| compare_runs | MCP | Read |
+| inspect_error_slice | MCP | Read |
+| load_review_protocol | Local | Read |
+| save_experiment_spec | Local | Proposal; human approval required for save |
 
-## Model, budgets and observed failures
+Manual proposals after deterministic inspection use the same write guard. Approval binds the exact canonical payload digest, session and one-hour expiry. The host controls the output path. Repeated approval returns the original saved file.
 
-Runtime model: `nvidia/nemotron-3.5-lightning:free`, with an optional verified free fallback `thinkingmachines/inkling-small:free` for the demo. The planned Gemma endpoints returned upstream 429 errors during development. A direct free NVIDIA call and MCP-backed investigations succeeded. The final runtime choice rests on this small local validation, not a claim of benchmark superiority.
+## Model and budgets
 
-Every review allows at most eight model requests (repair/retry included), 16 tool executions, 1,200 output tokens per call, 30,000 cumulative reported tokens, 180 seconds and USD 0.05 estimated cost. Models must be listed with zero prompt/output price and tool support. Actual cost may be unavailable and remains null; an app budget does not replace provider billing controls. Evaluation disables cross-model fallback.
+Default model: `nvidia/nemotron-3.5-lightning:free`. Demo fallback: `thinkingmachines/inkling-small:free`. Both passed local tool-capability checks. Gemma endpoints returned upstream 429 errors during testing. Evaluation keeps the selected model fixed and disables cross-model fallback.
 
-One early development review hit its cumulative token limit while creating a proposal; it was not counted as a completed review. Later comparison and security reviews completed. Provider and budget failures remain visible in output rather than receiving fabricated explanations.
+Per-review limits: eight model requests including retries and repair, 16 tool executions, 1,200 output tokens per call, 30,000 cumulative reported tokens, 180 seconds and USD 0.05 estimated cost. Only models listed with zero prompt/output price and tool support are permitted. Unavailable actual cost remains null; application budgets are separate from provider billing controls.
 
-## Evaluation status
+One unscored development review reached the cumulative token limit before completing. Later comparison and security reviews completed. Provider and budget failures are returned as errors.
 
-The suite defines 18 tasks, two reviewer configurations and one fresh trial per task. A is the base prompt. B adds one fixed procedure/manifest/evidence instruction block. Both have identical tools and security controls.
+## Evaluation
 
-**Quota-constrained run: 12 of 36 scheduled reviews executed. A passed 6/6; B passed 5/6. Twenty-four reviews remain pending.** The user selected the existing 50-request daily allowance. This is partial coverage and does not meet the full-suite execution requirement yet. It does not establish that either configuration is generally better.
+The suite defines 18 tasks, two reviewer configurations and one fresh trial per task. A uses the base prompt. B adds a fixed procedure, manifest and evidence instruction block. Tools and security controls are identical.
 
-The B matched-comparison case calculated a correct numerical difference using separate metrics but omitted the required comparison tool. Its tool-compliance and comparison-outcome graders failed. The exact answer and checks are preserved. Review grader scope before drawing a broader quality conclusion; never rewrite recorded results to hide the failure.
+**12 of 36 scheduled reviews executed: A passed 6/6; B passed 5/6. Twenty-four reviews remain pending under the 50-request daily allowance.** Full-suite execution is incomplete. These counts do not establish a general advantage for either configuration.
 
-`submission/` contains task definitions, separate A/B CSVs, full synthetic traces, coverage summary and error analysis. Model-free tests independently check numerical calculations against scikit-learn, real MCP, imports, ownership, approvals and provider edge cases. Controlled-provider tests are contract tests and never counted as live model evaluation.
+B's matched-comparison case returned the correct accuracy difference using separate metric calls but omitted the required `compare_runs` tool. It failed the tool-use and comparison-outcome graders. The original answer, evidence and checks are preserved.
 
-## Security and data
+`submission/` includes tasks, separate A/B CSVs, traces, coverage and error analysis. The 24 automated tests cover numerical agreement with scikit-learn, MCP round trips, imports, session isolation, approval controls and provider edge cases. Controlled-provider tests are separate from live evaluations.
 
-Run descriptions are untrusted. The live malicious-description scenario completed in two requests, reported the injection and created no pending save or experiment file. Handler tests separately reject arbitrary path fields, foreign-session actions, changed digests, expired/rejected decisions and truncated tool calls. Benign approved-save tests verify actual JSON contents and repeated-click behavior.
+## Security and data handling
 
-This demonstrates these fixtures and code controls, not universal prompt-injection resistance. AI prose can still overstate provenance or misread evidence. Numeric panels come directly from Python; users must inspect explanatory claims.
+Run descriptions are untrusted input. One live malicious-description test completed in two requests, identified the injection and created no pending action or experiment file. Handler tests reject arbitrary path fields, foreign-session decisions, changed digests, expired or rejected actions, and truncated write calls. Valid approval tests check saved JSON and repeated-click behavior.
 
-Files and SQLite state stay local. **AI review sends questions, bounded tool results and run descriptions to OpenRouter. Local UI does not imply local inference.** Use synthetic/public data only; do not upload personal or confidential records. Reset removes session objects and generated specifications but is not secure disk erasure. No PDPL certification or production readiness is claimed.
+Live injection coverage is limited to one fixture. Generated explanations may overstate provenance or misread evidence; numeric panels use Python calculations directly.
 
-## Submission and limitations
+Files and SQLite state stay local. **Live AI review sends questions, bounded tool results and run descriptions to OpenRouter.** The demo supports synthetic or public data. Reset logically deletes session objects and generated specifications; it does not securely erase disk contents. Production hardening and legal compliance assessment are outside the current scope.
 
-The [six-slide deck](submission/ModelCheck_Capstone.pptx), [demo guide](submission/DEMO_GUIDE.md), and evaluation evidence are included in this repository. GitHub’s Code menu offers a source ZIP; `uv run python scripts/package.py` also creates a sanitized local submission ZIP in the parent output folder. Keep the original course repository separate. The remaining work is the 24 pending fresh reviews once quota allows, broader red-team coverage, stronger procedure invocation, and real export provenance.
+## Project materials
 
-Course reference: SDAIA Academy, [Agentic AI Systems Engineering](https://github.com/SDAIAAcademy/agentic-ai), source snapshot `e950ba2f14b47deb6c30a586a6d4d5b77944e37d`. Adapted concepts include the loop, MCP bridge, context controls, permissions and A/B evaluations.
+- [Six-slide presentation](submission/ModelCheck_Capstone.pptx)
+- [Demo walkthrough](submission/DEMO_GUIDE.md)
+- [Implementation map](submission/IMPLEMENTATION.md)
+- [Evaluation analysis](submission/ERROR_ANALYSIS.md)
+- [Security evidence](submission/SECURITY.md)
+
+`uv run python scripts/package.py` creates a portable submission ZIP in the parent `output/` folder, excluding credentials, runtime data, environments and build files.
+
+Remaining work: 24 pending live reviews, broader injection coverage, more reliable protocol invocation and validation against real exports with traceable provenance.
+
+Course reference: SDAIA Academy, [Agentic AI Systems Engineering](https://github.com/SDAIAAcademy/agentic-ai), snapshot `e950ba2f14b47deb6c30a586a6d4d5b77944e37d`. The loop, MCP bridge, context controls, permissions and A/B evaluation design draw on the course patterns.

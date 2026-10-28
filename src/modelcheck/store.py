@@ -1,4 +1,4 @@
-"""Session-scoped persistence and the independently enforced write boundary."""
+"""Session-scoped persistence and approval-controlled writes."""
 from __future__ import annotations
 import hashlib
 import json

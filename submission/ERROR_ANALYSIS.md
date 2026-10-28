@@ -2,7 +2,7 @@
 
 Executed 12 of 36 scheduled reviews; 24 remain pending.
 
-Quota-aware execution reserves 5 requests for the live demo. No paid inference or purchases.
+Quota-aware execution reserves five requests for the live demo.
 
 | Configuration | Executed | Passed |
 |---|---:|---:|
@@ -37,7 +37,7 @@ Quota-aware execution reserves 5 requests for the live demo. No paid inference o
 - A / idempotent-save: not run
 - B / idempotent-save: not run
 
-Do not interpret this as a complete 18-task A/B result. Full answers and tool evidence are retained in traces.
+Coverage is partial across the 18-task A/B suite. Full answers and tool evidence are retained in traces.
 
 ## Review of the observed failure
 
@@ -47,9 +47,9 @@ B / matched-comparison produced the correct overall accuracy difference using tw
 
 - Both planned Gemma free endpoints returned provider 429 errors. A verified free NVIDIA endpoint served the recorded runs.
 - An early unscored development investigation hit the 30,000-token budget after a proposal request. It did not produce a completed report and is not included in the 12 executed final-suite rows.
-- The procedure-loader instruction did not consistently cause retrieval in observed traces. Keep this as a documented limitation rather than treating prompt text as enforcement.
-- Code graders check selected facts, tool use and action outcomes. They do not comprehensively certify all natural-language claims. In the recorded comparison, a statement about the test set remaining untouched exceeded what exported predictions alone establish. The UI metadata and notes qualify this; human review remains necessary.
+- The procedure-loader instruction did not consistently cause retrieval in observed traces. Procedure retrieval is prompted rather than enforced by the host.
+- Code graders check selected facts, tool use and action outcomes. They do not comprehensively certify all natural-language claims. In the recorded comparison, a statement about the test set remaining untouched exceeded what exported predictions alone establish. The interface flags this unsupported provenance claim alongside the original report.
 
-## Next change to test
+## Proposed evaluation revision
 
-Consider host-selected procedure retrieval for experiment-review requests, and clarify when compare_runs is mandatory. Freeze any revised prompt/grader version and evaluate it on fresh tasks. Do not silently change the v1 score or present reused synthetic fixtures as evidence of generalization.
+A future revision could retrieve the procedure at the host level and make the compare_runs requirement explicit. Revised prompts or graders require a new version and fresh evaluation; the current v1 results remain the baseline. Reused synthetic fixtures provide regression coverage, with generalization requiring additional data.

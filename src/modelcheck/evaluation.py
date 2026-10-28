@@ -99,11 +99,11 @@ def write_outputs(out,rows,meta):
       'results':{c:{'attempted':sum(r['config']==c for r in attempted),'passed':sum(r['config']==c and r['passed'] is True for r in attempted)} for c in meta['configs']},
       'limitation':'One fresh trial per task. Pending rows are not executed evaluations; partial-suite rates are not full-suite results.'}
     (out/'summary.json').write_text(json.dumps(summary,indent=2)+'\n')
-    lines=['# Evaluation status','',f"Executed {len(attempted)} of {len(rows)} scheduled reviews; {summary['pending']} remain pending.",'','Quota-aware execution reserves 5 requests for the live demo. No paid inference or purchases.','', '| Configuration | Executed | Passed |','|---|---:|---:|']
+    lines=['# Evaluation status','',f"Executed {len(attempted)} of {len(rows)} scheduled reviews; {summary['pending']} remain pending.",'','Quota-aware execution reserves five requests for the live demo.','', '| Configuration | Executed | Passed |','|---|---:|---:|']
     for c,s in summary['results'].items():lines.append(f"| {c} | {s['attempted']} | {s['passed']} |")
     lines+=['','## Failures and pending coverage','']
     lines += [f"- {r['config']} / {r['task']}: {r['failed_checks'] or r['status']}" for r in rows if r['passed'] is not True]
-    lines+=['','Do not interpret this as a complete 18-task A/B result. Full answers and tool evidence are retained in traces.']
+    lines+=['','Coverage is partial across the 18-task A/B suite. Full answers and tool evidence are retained in traces.']
     (out/'ERROR_ANALYSIS.md').write_text('\n'.join(lines)+'\n')
 
 async def evaluate(configs=('A','B'),trials=1,limit=None):
