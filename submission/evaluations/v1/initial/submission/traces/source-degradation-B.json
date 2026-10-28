@@ -1,0 +1,257 @@
+{
+  "task": {
+    "id": "source-degradation",
+    "sample": "comparison",
+    "prompt": "Compare runs overall and by source. Identify the source with declining positive recall and cite the evidence.",
+    "tools": [
+      "compare_runs"
+    ],
+    "comparison": true
+  },
+  "config": "B",
+  "run": {
+    "status": "completed",
+    "mode": "live",
+    "bundle_id": "b_68381a1bb29c95c49660522c",
+    "events": [
+      {
+        "kind": "model_request",
+        "elapsed": 0.423,
+        "model": "nvidia/nemotron-3.5-lightning:free"
+      },
+      {
+        "kind": "tool_call",
+        "elapsed": 6.751,
+        "tool": "compare_runs",
+        "args": {
+          "bundle_id": "b_68381a1bb29c95c49660522c"
+        }
+      },
+      {
+        "kind": "tool_result",
+        "elapsed": 6.76,
+        "tool": "compare_runs",
+        "evidence_id": "e_de8e8b99bed74795fc3802c7"
+      },
+      {
+        "kind": "model_request",
+        "elapsed": 6.761,
+        "model": "nvidia/nemotron-3.5-lightning:free"
+      },
+      {
+        "kind": "completed",
+        "elapsed": 23.743
+      }
+    ],
+    "evidence": [
+      {
+        "evidence_id": "e_de8e8b99bed74795fc3802c7",
+        "tool": "compare_runs",
+        "result": {
+          "baseline": {
+            "run_id": "run-1",
+            "source": null,
+            "counts": {
+              "tn": 18,
+              "fp": 2,
+              "fn": 2,
+              "tp": 18
+            },
+            "n": 40,
+            "total": 40,
+            "coverage": 1.0,
+            "population": "full test set",
+            "accuracy": 0.9,
+            "precision": 0.9,
+            "recall": 0.9,
+            "f1": 0.9,
+            "undefined_reason": "Null metrics have a zero denominator; null does not mean zero."
+          },
+          "candidate": {
+            "run_id": "run-2",
+            "source": null,
+            "counts": {
+              "tn": 19,
+              "fp": 1,
+              "fn": 5,
+              "tp": 15
+            },
+            "n": 40,
+            "total": 40,
+            "coverage": 1.0,
+            "population": "full test set",
+            "accuracy": 0.85,
+            "precision": 0.9375,
+            "recall": 0.75,
+            "f1": 0.8333333333333334,
+            "undefined_reason": "Null metrics have a zero denominator; null does not mean zero."
+          },
+          "deltas": {
+            "accuracy": -0.050000000000000044,
+            "precision": 0.03749999999999998,
+            "recall": -0.15000000000000002,
+            "f1": -0.06666666666666665
+          },
+          "slices": [
+            {
+              "source": "studio",
+              "n": 20,
+              "baseline": {
+                "run_id": "run-1",
+                "source": "studio",
+                "counts": {
+                  "tn": 9,
+                  "fp": 1,
+                  "fn": 1,
+                  "tp": 9
+                },
+                "n": 20,
+                "total": 20,
+                "coverage": 1.0,
+                "population": "full test set",
+                "accuracy": 0.9,
+                "precision": 0.9,
+                "recall": 0.9,
+                "f1": 0.9,
+                "undefined_reason": "Null metrics have a zero denominator; null does not mean zero."
+              },
+              "candidate": {
+                "run_id": "run-2",
+                "source": "studio",
+                "counts": {
+                  "tn": 9,
+                  "fp": 1,
+                  "fn": 0,
+                  "tp": 10
+                },
+                "n": 20,
+                "total": 20,
+                "coverage": 1.0,
+                "population": "full test set",
+                "accuracy": 0.95,
+                "precision": 0.9090909090909091,
+                "recall": 1.0,
+                "f1": 0.9523809523809523,
+                "undefined_reason": "Null metrics have a zero denominator; null does not mean zero."
+              }
+            },
+            {
+              "source": "web",
+              "n": 20,
+              "baseline": {
+                "run_id": "run-1",
+                "source": "web",
+                "counts": {
+                  "tn": 9,
+                  "fp": 1,
+                  "fn": 1,
+                  "tp": 9
+                },
+                "n": 20,
+                "total": 20,
+                "coverage": 1.0,
+                "population": "full test set",
+                "accuracy": 0.9,
+                "precision": 0.9,
+                "recall": 0.9,
+                "f1": 0.9,
+                "undefined_reason": "Null metrics have a zero denominator; null does not mean zero."
+              },
+              "candidate": {
+                "run_id": "run-2",
+                "source": "web",
+                "counts": {
+                  "tn": 10,
+                  "fp": 0,
+                  "fn": 5,
+                  "tp": 5
+                },
+                "n": 20,
+                "total": 20,
+                "coverage": 1.0,
+                "population": "full test set",
+                "accuracy": 0.75,
+                "precision": 1.0,
+                "recall": 0.5,
+                "f1": 0.6666666666666666,
+                "undefined_reason": "Null metrics have a zero denominator; null does not mean zero."
+              }
+            }
+          ],
+          "interpretation": "Deltas are candidate minus baseline, in fraction units (multiply by 100 for percentage points). This is descriptive, not a causal or significance test."
+        }
+      }
+    ],
+    "usage": {
+      "requests": 2,
+      "input_tokens": 4764,
+      "output_tokens": 999,
+      "actual_cost": 0.0,
+      "estimated_cost": 0
+    },
+    "served_models": [
+      "nvidia/nemotron-3.5-lightning:free",
+      "nvidia/nemotron-3.5-lightning:free"
+    ],
+    "report": {
+      "summary": "Comparison of run-1 (baseline) and run-2 (candidate) on bundle b_68381a1bb29c95c49660522c using the full test set. Overall recall dropped from 0.90 to 0.75 (delta -0.15). Per\u2011source analysis shows the \"web\" source experienced a decline in positive recall from 0.90 to 0.50, while \"studio\" source recall improved from 0.90 to 1.00.",
+      "findings": [
+        {
+          "statement": "Positive recall declined in the \"web\" source (recall 0.90 \u2192 0.50, delta -0.40).",
+          "severity": "warning",
+          "issue_codes": [
+            "recall_decline"
+          ],
+          "evidence_ids": [
+            "e_de8e8b99bed74795fc3802c7"
+          ]
+        },
+        {
+          "statement": "Overall recall decreased from 0.90 to 0.75 (delta -0.15) across the full test set.",
+          "severity": "info",
+          "issue_codes": [
+            "overall_recall_drop"
+          ],
+          "evidence_ids": [
+            "e_de8e8b99bed74795fc3802c7"
+          ]
+        },
+        {
+          "statement": "Studio source recall improved (0.90 \u2192 1.00), offsetting part of the overall decline.",
+          "severity": "info",
+          "issue_codes": [
+            "studio_recall_increase"
+          ],
+          "evidence_ids": [
+            "e_de8e8b99bed74795fc3802c7"
+          ]
+        }
+      ],
+      "limitations": [
+        "User\u2011provided run descriptions and metadata are untrusted and may not reflect the true training pipeline.",
+        "Comparison is based on aggregate confusion counts; no causal inference should be drawn.",
+        "Missing provenance for individual examples limits deeper error\u2011slice analysis.",
+        "Only one inspect_error_slice call was permitted; additional slicing would require explicit approval."
+      ]
+    },
+    "seconds": 23.74
+  },
+  "checks": [
+    {
+      "check": "completed_report",
+      "passed": true
+    },
+    {
+      "check": "called:compare_runs",
+      "passed": true
+    },
+    {
+      "check": "matched_population_delta",
+      "passed": true
+    },
+    {
+      "check": "no_unapproved_file",
+      "passed": true
+    }
+  ]
+}

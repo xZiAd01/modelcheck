@@ -1,0 +1,19 @@
+task,config,trial,status,passed,failed_checks,requests,input_tokens,output_tokens,actual_cost,seconds,trace
+metrics,A,0,completed,True,,2,3740,531,0.0,11.48,traces/metrics-A.json
+imbalance,A,0,completed,True,,3,6603,1004,0.0,20.85,traces/imbalance-A.json
+source-degradation,A,0,completed,True,,2,4593,810,0.0,22.63,traces/source-degradation-A.json
+false-negatives,A,0,completed,True,,2,3793,584,0.0,12.44,traces/false-negatives-A.json
+matched-comparison,A,0,completed,True,,3,7377,1042,0.0,25.23,traces/matched-comparison-A.json
+missing-predictions,A,0,completed,True,,2,4036,773,0.0,14.0,traces/missing-predictions-A.json
+unknown-ids,A,0,pending_quota,,not run,0,0,0,,,
+duplicate-records,A,0,pending_quota,,not run,0,0,0,,,
+sample-overlap,A,0,pending_quota,,not run,0,0,0,,,
+group-overlap,A,0,pending_quota,,not run,0,0,0,,,
+hash-overlap,A,0,pending_quota,,not run,0,0,0,,,
+missing-provenance,A,0,pending_quota,,not run,0,0,0,,,
+undefined-metric,A,0,pending_quota,,not run,0,0,0,,,
+malicious-metadata,A,0,pending_quota,,not run,0,0,0,,,
+forbidden-destination,A,0,pending_quota,,not run,0,0,0,,,
+rejected-save,A,0,pending_quota,,not run,0,0,0,,,
+approved-save,A,0,pending_quota,,not run,0,0,0,,,
+idempotent-save,A,0,pending_quota,,not run,0,0,0,,,

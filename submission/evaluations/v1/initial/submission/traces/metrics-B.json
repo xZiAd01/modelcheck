@@ -1,0 +1,131 @@
+{
+  "task": {
+    "id": "metrics",
+    "sample": "comparison",
+    "prompt": "Calculate run-1 confusion counts, accuracy, precision, recall and F1. Cite measured evidence.",
+    "tools": [
+      "compute_metrics"
+    ],
+    "metric": {
+      "run_id": "run-1",
+      "counts": {
+        "tn": 18,
+        "fp": 2,
+        "fn": 2,
+        "tp": 18
+      },
+      "accuracy": 0.9
+    }
+  },
+  "config": "B",
+  "run": {
+    "status": "completed",
+    "mode": "live",
+    "bundle_id": "b_20d7bda2dfe324852ed968ec",
+    "events": [
+      {
+        "kind": "model_request",
+        "elapsed": 0.389,
+        "model": "nvidia/nemotron-3.5-lightning:free"
+      },
+      {
+        "kind": "tool_call",
+        "elapsed": 3.55,
+        "tool": "compute_metrics",
+        "args": {
+          "source": null,
+          "run_id": "run-1",
+          "bundle_id": "b_20d7bda2dfe324852ed968ec"
+        }
+      },
+      {
+        "kind": "tool_result",
+        "elapsed": 3.56,
+        "tool": "compute_metrics",
+        "evidence_id": "e_f23df429d5d7d6dfb2311de3"
+      },
+      {
+        "kind": "model_request",
+        "elapsed": 3.561,
+        "model": "nvidia/nemotron-3.5-lightning:free"
+      },
+      {
+        "kind": "completed",
+        "elapsed": 13.909
+      }
+    ],
+    "evidence": [
+      {
+        "evidence_id": "e_f23df429d5d7d6dfb2311de3",
+        "tool": "compute_metrics",
+        "result": {
+          "run_id": "run-1",
+          "source": null,
+          "counts": {
+            "tn": 18,
+            "fp": 2,
+            "fn": 2,
+            "tp": 18
+          },
+          "n": 40,
+          "total": 40,
+          "coverage": 1.0,
+          "population": "full test set",
+          "accuracy": 0.9,
+          "precision": 0.9,
+          "recall": 0.9,
+          "f1": 0.9,
+          "undefined_reason": "Null metrics have a zero denominator; null does not mean zero."
+        }
+      }
+    ],
+    "usage": {
+      "requests": 2,
+      "input_tokens": 3847,
+      "output_tokens": 764,
+      "actual_cost": 0.0,
+      "estimated_cost": 0
+    },
+    "served_models": [
+      "nvidia/nemotron-3.5-lightning:free",
+      "nvidia/nemotron-3.5-lightning:free"
+    ],
+    "report": {
+      "summary": "Computed classification metrics for run-1 within bundle b_20d7bda2dfe324852ed968ec using the full test set (coverage 1.0).",
+      "findings": [
+        {
+          "statement": "Confusion counts: TN=18, FP=2, FN=2, TP=18. Accuracy=0.9, Precision=0.9, Recall=0.9, F1=0.9.",
+          "severity": "info",
+          "issue_codes": [],
+          "evidence_ids": [
+            "e_f23df429d5d7d6dfb2311de3"
+          ]
+        }
+      ],
+      "limitations": [
+        "Metrics are aggregated over the entire test set with no source breakdown; per\u2011source analysis was not performed.",
+        "The compute_metrics tool returned undefined_reason noting that null denominators would be treated separately; here all denominators are non\u2011zero.",
+        "No provenance or training\u2011pipeline details are available from the measured evidence."
+      ]
+    },
+    "seconds": 13.91
+  },
+  "checks": [
+    {
+      "check": "completed_report",
+      "passed": true
+    },
+    {
+      "check": "called:compute_metrics",
+      "passed": true
+    },
+    {
+      "check": "known_metric_outcome",
+      "passed": true
+    },
+    {
+      "check": "no_unapproved_file",
+      "passed": true
+    }
+  ]
+}

@@ -1,0 +1,202 @@
+{
+  "task": {
+    "id": "imbalance",
+    "sample": "imbalance",
+    "prompt": "Inspect run-1 accuracy and positive recall. Explain why accuracy alone misleads on this imbalanced test set.",
+    "tools": [
+      "compute_metrics"
+    ],
+    "metric": {
+      "run_id": "run-1",
+      "accuracy": 0.9,
+      "recall": 0
+    }
+  },
+  "config": "B",
+  "run": {
+    "status": "completed",
+    "mode": "live",
+    "bundle_id": "b_3f78116171b2e26f968461bb",
+    "events": [
+      {
+        "kind": "model_request",
+        "elapsed": 0.37,
+        "model": "nvidia/nemotron-3.5-lightning:free"
+      },
+      {
+        "kind": "tool_call",
+        "elapsed": 6.237,
+        "tool": "inspect_manifest",
+        "args": {
+          "bundle_id": "b_3f78116171b2e26f968461bb"
+        }
+      },
+      {
+        "kind": "tool_result",
+        "elapsed": 6.246,
+        "tool": "inspect_manifest",
+        "evidence_id": "e_d16b808af7173a30fbf7d8e6"
+      },
+      {
+        "kind": "model_request",
+        "elapsed": 6.247,
+        "model": "nvidia/nemotron-3.5-lightning:free"
+      },
+      {
+        "kind": "tool_call",
+        "elapsed": 8.204,
+        "tool": "compute_metrics",
+        "args": {
+          "bundle_id": "b_3f78116171b2e26f968461bb",
+          "run_id": "run-1"
+        }
+      },
+      {
+        "kind": "tool_result",
+        "elapsed": 8.213,
+        "tool": "compute_metrics",
+        "evidence_id": "e_b8dbfbdd965b3212c6f60299"
+      },
+      {
+        "kind": "model_request",
+        "elapsed": 8.214,
+        "model": "nvidia/nemotron-3.5-lightning:free"
+      },
+      {
+        "kind": "completed",
+        "elapsed": 18.026
+      }
+    ],
+    "evidence": [
+      {
+        "evidence_id": "e_d16b808af7173a30fbf7d8e6",
+        "tool": "inspect_manifest",
+        "result": {
+          "status": "ready",
+          "findings": [],
+          "coverage": [
+            {
+              "run_id": "run-1",
+              "matched": 40,
+              "total": 40,
+              "fraction": 1.0
+            },
+            {
+              "run_id": "run-2",
+              "matched": 40,
+              "total": 40,
+              "fraction": 1.0
+            }
+          ],
+          "test_samples": 40,
+          "sources": [
+            "studio",
+            "web"
+          ],
+          "runs": [
+            {
+              "id": "run-1",
+              "name": "Baseline",
+              "hash": "60c40c1f8543e133eb7d197d96d25cd21d349f20ea267295fb4261686fb7f0ca",
+              "metadata": {
+                "model_version": "synthetic-base-v1",
+                "threshold_selection_split": "validation",
+                "preprocessing": "declared train-only; not independently verified"
+              }
+            },
+            {
+              "id": "run-2",
+              "name": "Quantized candidate",
+              "hash": "f86bac8295f46d6715511f2127eb470f1969e171000ef4d9bea2bb4f6dacf2a4",
+              "metadata": {
+                "model_version": "synthetic-quant-v1",
+                "threshold_selection_split": "validation",
+                "preprocessing": "declared train-only; not independently verified"
+              }
+            }
+          ],
+          "manifest_hash": "51a52f7d36a7a643fc57c2239bba75409d23c01aa3123b493f6e40b656b400ab",
+          "synthetic": true,
+          "limits": "ID/group/exact-hash checks cannot certify preprocessing, near duplicates, or the complete training pipeline."
+        }
+      },
+      {
+        "evidence_id": "e_b8dbfbdd965b3212c6f60299",
+        "tool": "compute_metrics",
+        "result": {
+          "run_id": "run-1",
+          "source": null,
+          "counts": {
+            "tn": 36,
+            "fp": 0,
+            "fn": 4,
+            "tp": 0
+          },
+          "n": 40,
+          "total": 40,
+          "coverage": 1.0,
+          "population": "full test set",
+          "accuracy": 0.9,
+          "precision": null,
+          "recall": 0.0,
+          "f1": 0.0,
+          "undefined_reason": "Null metrics have a zero denominator; null does not mean zero."
+        }
+      }
+    ],
+    "usage": {
+      "requests": 3,
+      "input_tokens": 7189,
+      "output_tokens": 1156,
+      "actual_cost": 0.0,
+      "estimated_cost": 0
+    },
+    "served_models": [
+      "nvidia/nemotron-3.5-lightning:free",
+      "nvidia/nemotron-3.5-lightning:free",
+      "nvidia/nemotron-3.5-lightning:free"
+    ],
+    "report": {
+      "summary": "Run\u20111 on bundle b_3f78116171b2e26f968461bb achieved 90\u202f% accuracy but zero positive recall (0/4 true positives identified). The test set contains 40 samples with 36 true negatives and 4 false negatives, illustrating how accuracy can be misleading when the positive class is rare or missed entirely.",
+      "findings": [
+        {
+          "statement": "Accuracy of 0.9 is driven almost entirely by true negatives (36/40); the model predicts no positives, resulting in 0\u202f% recall for the positive class.",
+          "severity": "warning",
+          "issue_codes": [
+            "imbalanced-data",
+            "accuracy-mislead"
+          ],
+          "evidence_ids": [
+            "e_b8dbfbdd965b3212c6f60299",
+            "e_d16b808af7173a30fbf7d8e6"
+          ]
+        }
+      ],
+      "limitations": [
+        "Manifest is synthetic; provenance of preprocessing is not independently verified (see manifest evidence e_d16b808af7173a30fbf7d8e6).",
+        "Coverage checks confirm full test\u2011set inclusion but cannot certify the training pipeline or near\u2011duplicate handling.",
+        "No source\u2011level breakdown is provided; error\u2011slice inspection would be needed to assess per\u2011source performance.",
+        "Metrics reflect the specific test split; any generalization claim requires validation on held\u2011out data."
+      ]
+    },
+    "seconds": 18.03
+  },
+  "checks": [
+    {
+      "check": "completed_report",
+      "passed": true
+    },
+    {
+      "check": "called:compute_metrics",
+      "passed": true
+    },
+    {
+      "check": "known_metric_outcome",
+      "passed": true
+    },
+    {
+      "check": "no_unapproved_file",
+      "passed": true
+    }
+  ]
+}

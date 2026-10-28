@@ -1,0 +1,276 @@
+{
+  "task": {
+    "id": "matched-comparison",
+    "sample": "comparison",
+    "prompt": "Check whether these runs are comparable and calculate the accuracy delta. Cite population and metric evidence.",
+    "tools": [
+      "inspect_manifest",
+      "compare_runs"
+    ],
+    "comparison": true
+  },
+  "config": "B",
+  "run": {
+    "status": "completed",
+    "mode": "live",
+    "bundle_id": "b_eea64fe07443307fa6c7351a",
+    "events": [
+      {
+        "kind": "model_request",
+        "elapsed": 0.344,
+        "model": "nvidia/nemotron-3.5-lightning:free"
+      },
+      {
+        "kind": "tool_call",
+        "elapsed": 7.534,
+        "tool": "inspect_manifest",
+        "args": {
+          "bundle_id": "b_eea64fe07443307fa6c7351a"
+        }
+      },
+      {
+        "kind": "tool_result",
+        "elapsed": 7.542,
+        "tool": "inspect_manifest",
+        "evidence_id": "e_c8b7303cfea72c7cff24b09e"
+      },
+      {
+        "kind": "model_request",
+        "elapsed": 7.544,
+        "model": "nvidia/nemotron-3.5-lightning:free"
+      },
+      {
+        "kind": "tool_call",
+        "elapsed": 10.362,
+        "tool": "compute_metrics",
+        "args": {
+          "run_id": "run-1",
+          "bundle_id": "b_eea64fe07443307fa6c7351a"
+        }
+      },
+      {
+        "kind": "tool_result",
+        "elapsed": 10.372,
+        "tool": "compute_metrics",
+        "evidence_id": "e_e61cd9dd49b33f0b99a7221f"
+      },
+      {
+        "kind": "model_request",
+        "elapsed": 10.374,
+        "model": "nvidia/nemotron-3.5-lightning:free"
+      },
+      {
+        "kind": "tool_call",
+        "elapsed": 12.676,
+        "tool": "compute_metrics",
+        "args": {
+          "run_id": "run-2",
+          "bundle_id": "b_eea64fe07443307fa6c7351a"
+        }
+      },
+      {
+        "kind": "tool_result",
+        "elapsed": 12.684,
+        "tool": "compute_metrics",
+        "evidence_id": "e_084cf6720b9b52a5a290c9a2"
+      },
+      {
+        "kind": "model_request",
+        "elapsed": 12.685,
+        "model": "nvidia/nemotron-3.5-lightning:free"
+      },
+      {
+        "kind": "completed",
+        "elapsed": 30.589
+      }
+    ],
+    "evidence": [
+      {
+        "evidence_id": "e_c8b7303cfea72c7cff24b09e",
+        "tool": "inspect_manifest",
+        "result": {
+          "status": "ready",
+          "findings": [],
+          "coverage": [
+            {
+              "run_id": "run-1",
+              "matched": 40,
+              "total": 40,
+              "fraction": 1.0
+            },
+            {
+              "run_id": "run-2",
+              "matched": 40,
+              "total": 40,
+              "fraction": 1.0
+            }
+          ],
+          "test_samples": 40,
+          "sources": [
+            "studio",
+            "web"
+          ],
+          "runs": [
+            {
+              "id": "run-1",
+              "name": "Baseline",
+              "hash": "d6b2a1b8aa7084b3c8558500f80e01daa56f370c64945fea77325dabf44a8bfb",
+              "metadata": {
+                "model_version": "synthetic-base-v1",
+                "threshold_selection_split": "validation",
+                "preprocessing": "declared train-only; not independently verified"
+              }
+            },
+            {
+              "id": "run-2",
+              "name": "Quantized candidate",
+              "hash": "c7b39df4b8397ed43fd65eb112bf6a173856d40b792f6cb0f0b5c244bd635acc",
+              "metadata": {
+                "model_version": "synthetic-quant-v1",
+                "threshold_selection_split": "validation",
+                "preprocessing": "declared train-only; not independently verified"
+              }
+            }
+          ],
+          "manifest_hash": "fa7b5181b3370677aa00a7a19b9a7a11f9dfbaf42a99f048df0ef5c2517beb4f",
+          "synthetic": true,
+          "limits": "ID/group/exact-hash checks cannot certify preprocessing, near duplicates, or the complete training pipeline."
+        }
+      },
+      {
+        "evidence_id": "e_e61cd9dd49b33f0b99a7221f",
+        "tool": "compute_metrics",
+        "result": {
+          "run_id": "run-1",
+          "source": null,
+          "counts": {
+            "tn": 18,
+            "fp": 2,
+            "fn": 2,
+            "tp": 18
+          },
+          "n": 40,
+          "total": 40,
+          "coverage": 1.0,
+          "population": "full test set",
+          "accuracy": 0.9,
+          "precision": 0.9,
+          "recall": 0.9,
+          "f1": 0.9,
+          "undefined_reason": "Null metrics have a zero denominator; null does not mean zero."
+        }
+      },
+      {
+        "evidence_id": "e_084cf6720b9b52a5a290c9a2",
+        "tool": "compute_metrics",
+        "result": {
+          "run_id": "run-2",
+          "source": null,
+          "counts": {
+            "tn": 19,
+            "fp": 1,
+            "fn": 5,
+            "tp": 15
+          },
+          "n": 40,
+          "total": 40,
+          "coverage": 1.0,
+          "population": "full test set",
+          "accuracy": 0.85,
+          "precision": 0.9375,
+          "recall": 0.75,
+          "f1": 0.8333333333333334,
+          "undefined_reason": "Null metrics have a zero denominator; null does not mean zero."
+        }
+      }
+    ],
+    "usage": {
+      "requests": 4,
+      "input_tokens": 9606,
+      "output_tokens": 1314,
+      "actual_cost": 0.0,
+      "estimated_cost": 0
+    },
+    "served_models": [
+      "nvidia/nemotron-3.5-lightning:free",
+      "nvidia/nemotron-3.5-lightning:free",
+      "nvidia/nemotron-3.5-lightning:free",
+      "nvidia/nemotron-3.5-lightning:free"
+    ],
+    "report": {
+      "summary": "Both runs cover the full test set (40/40 samples) and are therefore comparable. Run\u20111 (baseline) achieved 90\u202f% accuracy; run\u20112 (candidate) achieved 85\u202f% accuracy, yielding a \u22125\u202f% delta (candidate minus baseline).",
+      "findings": [
+        {
+          "statement": "Runs are comparable: both have 100\u202f% coverage of the test set (40/40 matched) and no split\u2011overlap issues.",
+          "severity": "info",
+          "issue_codes": [
+            "pop_coverage"
+          ],
+          "evidence_ids": [
+            "e_c8b7303cfea72c7cff24b09e"
+          ]
+        },
+        {
+          "statement": "Accuracy for run\u20111 (baseline) = 0.90 (TN=18, FP=2, FN=2, TP=18) on the full test set.",
+          "severity": "info",
+          "issue_codes": [
+            "metric_accuracy"
+          ],
+          "evidence_ids": [
+            "e_e61cd9dd49b33f0b99a7221f"
+          ]
+        },
+        {
+          "statement": "Accuracy for run\u20112 (candidate) = 0.85 (TN=19, FP=1, FN=5, TP=15) on the full test set.",
+          "severity": "info",
+          "issue_codes": [
+            "metric_accuracy"
+          ],
+          "evidence_ids": [
+            "e_084cf6720b9b52a5a290c9a2"
+          ]
+        },
+        {
+          "statement": "Accuracy delta (candidate minus baseline) = 0.85 \u2212 0.90 = \u22120.05 (\u22125\u202f%). The candidate shows a modest decline in accuracy.",
+          "severity": "info",
+          "issue_codes": [
+            "metric_delta"
+          ],
+          "evidence_ids": [
+            "e_e61cd9dd49b33f0b99a7221f",
+            "e_084cf6720b9b52a5a290c9a2"
+          ]
+        }
+      ],
+      "limitations": [
+        "Manifest metadata (model_version, preprocessing) is untrusted and has not been independently verified.",
+        "Limits statement from manifest: ID/group/exact\u2011hash checks cannot certify preprocessing, near\u2011duplicates, or the complete training pipeline.",
+        "No source\u2011level slice analysis was performed; error patterns per source (studio/web) are not examined.",
+        "Delta is computed on the same test set; any selection or tuning on validation data is not reflected here."
+      ]
+    },
+    "seconds": 30.59
+  },
+  "checks": [
+    {
+      "check": "completed_report",
+      "passed": true
+    },
+    {
+      "check": "called:inspect_manifest",
+      "passed": true
+    },
+    {
+      "check": "called:compare_runs",
+      "passed": false
+    },
+    {
+      "check": "matched_population_delta",
+      "passed": false
+    },
+    {
+      "check": "no_unapproved_file",
+      "passed": true
+    }
+  ]
+}

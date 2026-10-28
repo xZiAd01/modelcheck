@@ -14,7 +14,7 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel,ConfigDict,Field
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 
-from .agent import Reviewer
+from .agent import Reviewer,RUNTIME_VERSION
 from .bridge import Bridge
 from .data import Problem,build_bundle,inspect
 from .store import Store
@@ -115,7 +115,7 @@ def create_app(root=None):
         # Refresh local configuration without restarting the service.
         load_dotenv(PROJECT/".env",override=True)
         return {"ok":True,"mcp_ready":bridge.client is not None,"api_key_configured":bool(os.getenv("OPENROUTER_API_KEY")),
-                "model":os.getenv("MODELCHECK_MODEL","nvidia/nemotron-3.5-lightning:free"),"mode":"local","version":"0.1.0"}
+                "model":os.getenv("MODELCHECK_MODEL","nvidia/nemotron-3.5-lightning:free"),"mode":"local","version":"0.1.0","runtime_version":RUNTIME_VERSION}
 
     @app.post("/api/sessions")
     async def session():
@@ -145,7 +145,7 @@ def create_app(root=None):
     @app.post("/api/inspections")
     async def inspection(req:ReviewIn,who=Depends(owner)):
         data=store.get(who,"bundle",req.bundle_id)
-        rid=store.put(who,"review",{"status":"running","mode":"deterministic","events":[],"evidence":[]})
+        rid=store.put(who,"review",{"status":"running","mode":"deterministic","runtime_version":RUNTIME_VERSION,"protocol":None,"events":[],"evidence":[]})
         evidence=[];events=[]
         calls=[("inspect_manifest",{})]+[("compute_metrics",{"run_id":r["id"]}) for r in data["runs"]]
         if len(data["runs"])==2:calls.append(("compare_runs",{}))
@@ -155,7 +155,7 @@ def create_app(root=None):
                 e=store.evidence(who,rid,name,result);evidence.append(e)
                 events.append({"kind":"tool_result","tool":name,"evidence_id":e["evidence_id"]})
             except Problem as exc:events.append({"kind":"tool_blocked","tool":name,"error":{"code":exc.code,"message":str(exc)}})
-        result={"status":"completed","mode":"deterministic","bundle_id":req.bundle_id,"events":events,"evidence":evidence,
+        result={"status":"completed","mode":"deterministic","runtime_version":RUNTIME_VERSION,"protocol":None,"bundle_id":req.bundle_id,"events":events,"evidence":evidence,
                 "report":{"summary":"Deterministic data inspection complete. These are tool calculations, not an LLM review.",
                     "findings":[{"statement":f["message"],"severity":f["severity"],"issue_codes":[f["code"]],"evidence_ids":[evidence[0]["evidence_id"]]} for f in inspect(data)["findings"]],
                     "limitations":["Synthetic examples demonstrate functionality, not historical model performance.","Local interface; live model inference, when used, is sent to OpenRouter."]}}
@@ -168,9 +168,9 @@ def create_app(root=None):
         if not os.getenv("OPENROUTER_API_KEY"):raise Problem("missing_api_key","Add the key to modelcheck/.env. Data inspection works without it.",503)
         store.get(who,"bundle",req.bundle_id)
         if queue.full():raise Problem("queue_full","Review queue is full. Wait for the current review.",429)
-        rid=store.put(who,"review",{"status":"queued","mode":"live","bundle_id":req.bundle_id,"config":req.config,"question":req.question,"events":[],"evidence":[]})
+        rid=store.put(who,"review",{"status":"queued","mode":"live","runtime_version":RUNTIME_VERSION,"protocol":None,"bundle_id":req.bundle_id,"config":req.config,"question":req.question,"events":[],"evidence":[]})
         queue.put_nowait((who,rid,req))
-        return {"id":rid,"status":"queued"}
+        return {"id":rid,"status":"queued","runtime_version":RUNTIME_VERSION,"protocol":None}
 
     @app.get("/api/reviews/{rid}")
     async def get_review(rid:str,who=Depends(owner)):
@@ -197,7 +197,7 @@ def create_app(root=None):
         bid=store.put(who,"bundle",samples.bundle("comparison"))
         rid=store.put(who,"review",{"status":"running","mode":"recorded","bundle_id":bid})
         result=copy.deepcopy(original)
-        result.update(mode="recorded",bundle_id=bid,pending_action=None)
+        result.update(mode="recorded",runtime_version="v1",protocol={"source":"model","version":"1","sha256":None,"metadata_origin":"Recorded v1 execution; no host preload was performed."},bundle_id=bid,pending_action=None)
         mapping={};evidence=[]
         for e in original.get("evidence",[]):
             saved=store.evidence(who,rid,e["tool"],e["result"])
@@ -207,7 +207,7 @@ def create_app(root=None):
             finding["evidence_ids"]=[mapping[e] for e in finding["evidence_ids"]]
         for event in result.get("events",[]):
             if event.get("evidence_id") in mapping:event["evidence_id"]=mapping[event["evidence_id"]]
-        result["report"]["summary"]="Recorded AI review (28 October 2026, synthetic data). No model request runs during replay. "+result["report"]["summary"]
+        result["report"]["summary"]="Recorded AI review · v1 (28 October 2026, synthetic data). No model request runs during replay. "+result["report"]["summary"]
         result["application_notice"]="Evidence check: the recorded model says the test set was not used for tuning. Prediction exports cannot establish that claim. Treat training and preprocessing metadata as unverified declarations."
         result["validation"]=inspect(samples.bundle("comparison"))
         store.put(who,"review",result,rid)

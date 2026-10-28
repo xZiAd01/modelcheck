@@ -15,22 +15,24 @@ cp .env.example .env
 uv run modelcheck serve
 ```
 
-Open <http://127.0.0.1:8787>. The English interface supports built-in synthetic samples and CSV/JSON uploads. Inspection, manual proposals, approvals and recorded review work without an API key. Live AI review uses OpenRouter. Verified runtime: Python 3.12.13 with locked dependencies.
+Open <http://127.0.0.1:8787>. The English interface supports built-in synthetic samples and CSV/JSON uploads. Inspection, manual proposals, approvals and recorded review work without an API key. Live AI review uses OpenRouter. Verified runtime: Python 3.12.13 on macOS with locked dependencies. Evaluation locking uses POSIX advisory locks.
 
 ```sh
 uv run pytest -q
 uv run modelcheck ask "Compare both runs overall and by source."
-uv run modelcheck eval --config A B --trials 1
+uv run modelcheck eval --runtime-version v1 --config A B --trials 1
+# After the v1 suite finishes:
+uv run modelcheck eval --runtime-version v2 --config A B --trials 1
 uv run modelcheck check
 ```
 
-Evaluation resumes pending tasks with matching suite and configuration metadata. It reserves five provider requests for the demo and starts a review only when its eight-request maximum also fits. Executed rows remain unchanged. `check` reports an incomplete status when live checks cannot run.
+Evaluation resumes pending tasks only when runtime, task, prompt, schema, grader and dependency fingerprints match. It requires at least 13 remaining requests before a trial: eight maximum plus five reserved for the demo. V1 finishes before v2 can consume evaluation quota. `check` runs the automated tests and uses an isolated `runtime/smoke/` directory for live smoke checks; it returns an incomplete status while v1 is pending or live checks cannot run. Exit codes: 0 for completed passing runs, 1 for completed runs with failures, 2 for incomplete runs.
 
 ## Demo workflow
 
 1. Load **The quantization trade-off**: candidate accuracy is 85%, recall 75% and F1 83.33%, against a 90% baseline for all three metrics.
 2. Inspect source slices: studio recall rises from 90% to 100%; web recall falls from 90% to 50%.
-3. Select **View recorded AI review**, or **Run AI review** for a fresh investigation.
+3. Select **View recorded AI review** for the captured v1 run, or **Run AI review** for the current v2 agent.
 4. Select **Draft a follow-up**, review the exact specification, then approve or reject. Approval saves one JSON file; rejection saves none.
 5. Upload the supplied example files, export the report, or explore overlap and missing-prediction scenarios.
 
@@ -74,12 +76,12 @@ flowchart LR
 | Layer | Implementation |
 |---|---|
 | Prompt | Typed tools, structured reports, evidence citations and trust boundaries |
-| Context | Review protocol loader, bounded JSON results and complete-round compaction |
+| Context | Host-loaded v2 protocol with a version/hash, bounded JSON results and complete-round compaction |
 | Harness | Session-owned IDs, allowlisted reads, approval-bound saves, budgets and audit events |
 | Loop | One agent with an eight-request and 16-tool limit |
 | Persistence | SQLite evidence, reviews and durable pending actions |
 
-The protocol loader is available, but observed traces do not consistently invoke it. Persistence covers approval state; the agent loop has no full graph checkpointing.
+The current v2 host loads the packaged protocol before the first provider request, records a `protocol_loaded` event with its SHA-256 and retains the guidance during compaction. Missing, unreadable, blank, invalid UTF-8 or oversized protocols stop the review before inference. The limit is 4 KiB. The preload counts as one of 16 executions, leaving up to 15 model-selected calls. V1 retains its original on-demand loader and observed invocation limitation. Persistence covers approval state; the agent loop has no full graph checkpointing.
 
 | Tool | Transport | Permission |
 |---|---|---|
@@ -102,17 +104,31 @@ One unscored development review reached the cumulative token limit before comple
 
 ## Evaluation
 
-The suite defines 18 tasks, two reviewer configurations and one fresh trial per task. A uses the base prompt. B adds a fixed procedure, manifest and evidence instruction block. Tools and security controls are identical.
+Each runtime has 18 tasks, two reviewer configurations and one fresh trial per task. A uses the base prompt; B adds a fixed investigation-procedure instruction. Tools and security controls match within each runtime. V1 uses the frozen original reviewer. V2 adds host protocol loading to both configurations and clarifies comparison-tool use.
 
-**12 of 36 scheduled reviews executed: A passed 6/6; B passed 5/6. Twenty-four reviews remain pending under the 50-request daily allowance.** Full-suite execution is incomplete. These counts do not establish a general advantage for either configuration.
+**V1: 12 of 36 scheduled reviews executed: A passed 6/6; B passed 5/6. Twenty-four reviews remain pending under the 50-request daily allowance.** Full-suite execution is incomplete. These counts do not establish a general advantage for either configuration.
 
-B's matched-comparison case returned the correct accuracy difference using separate metric calls but omitted the required `compare_runs` tool. It failed the tool-use and comparison-outcome graders. The original answer, evidence and checks are preserved.
+V1 B's matched-comparison case returned the correct accuracy difference using separate metric calls but omitted the required `compare_runs` tool. It failed the tool-use and comparison-outcome graders. The original answer, evidence and checks are preserved.
 
-`submission/` includes tasks, separate A/B CSVs, traces, coverage and error analysis. The 24 automated tests cover numerical agreement with scikit-learn, MCP round trips, imports, session isolation, approval controls and provider edge cases. Controlled-provider tests are separate from live evaluations.
+**V2: 0 of 36 live reviews executed.** Its separate suite is pending until v1 completes. The application uses v2, while the recorded replay and existing live scores belong to v1. V2 has controlled-provider and browser integration coverage; live improvement is unmeasured.
+
+`submission/` retains v1's current tasks, separate A/B CSVs and traces. `COVERAGE.md` is generated; `ERROR_ANALYSIS.md` remains a separate narrative. `evaluations/v1/initial/` preserves original source and evidence with checksums. Metadata for the original 12 executions was recovered from the published release, rather than recorded during those executions. New executions capture fingerprints and requested/served model IDs directly. Provider behavior may vary across quota windows.
+
+V2 outputs use `submission/evaluations/v2/<fingerprint>/`. Progress writes use atomic replacement and checksummed traces; a trace committed before an interrupted progress write is recovered without repeating inference. Configuration mismatches and changed traces stop resumption. Failed attempts remain recorded.
+
+A targeted rerun uses a separate result directory and does not replace full-suite scores:
+
+```sh
+uv run modelcheck eval --runtime-version v2 --config B --task matched-comparison
+```
+
+`--output PATH` selects a new directory explicitly. V2 cannot write to the v1 submission root, and the initial snapshot is protected from evaluation writes.
+
+The 56 automated tests cover numerical agreement with scikit-learn, real MCP, imports, session isolation, approvals, protocol loading and compaction, checkpoint recovery, version selection and quota gates. Controlled-provider tests are separate from live evaluations.
 
 ## Security and data handling
 
-Run descriptions are untrusted input. One live malicious-description test completed in two requests, identified the injection and created no pending action or experiment file. Handler tests reject arbitrary path fields, foreign-session decisions, changed digests, expired or rejected actions, and truncated write calls. Valid approval tests check saved JSON and repeated-click behavior.
+Run descriptions are untrusted input. One v1 live malicious-description test completed in two requests, identified the injection and created no pending action or experiment file. Handler tests reject arbitrary path fields, foreign-session decisions, changed digests, expired or rejected actions, and truncated write calls. Valid approval tests check saved JSON and repeated-click behavior.
 
 Live injection coverage is limited to one fixture. Generated explanations may overstate provenance or misread evidence; numeric panels use Python calculations directly.
 
@@ -125,9 +141,11 @@ Files and SQLite state stay local. **Live AI review sends questions, bounded too
 - [Implementation map](submission/IMPLEMENTATION.md)
 - [Evaluation analysis](submission/ERROR_ANALYSIS.md)
 - [Security evidence](submission/SECURITY.md)
+- [Evaluation layout and resumption](submission/evaluations/README.md)
+- [Validation status](submission/VALIDATION.md)
 
 `uv run python scripts/package.py` creates a portable submission ZIP in the parent `output/` folder, excluding credentials, runtime data, environments and build files.
 
-Remaining work: 24 pending live reviews, broader injection coverage, more reliable protocol invocation and validation against real exports with traceable provenance.
+Remaining work: 24 pending v1 reviews, 36 pending v2 reviews, repeated-trial reliability, broader live injection coverage and validation against real exports with traceable provenance. Screen-reader speech output remains unverified. Evaluation resumes in a later execution session when quota permits; no background schedule is configured.
 
 Course reference: SDAIA Academy, [Agentic AI Systems Engineering](https://github.com/SDAIAAcademy/agentic-ai), snapshot `e950ba2f14b47deb6c30a586a6d4d5b77944e37d`. The loop, MCP bridge, context controls, permissions and A/B evaluation design draw on the course patterns.

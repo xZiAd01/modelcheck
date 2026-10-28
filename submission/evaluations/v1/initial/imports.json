@@ -1,0 +1,78 @@
+{
+  "source_revision": "20f61032851a1eaca3a23956f90ea0dd1cff8c3b",
+  "metadata_origin": "Recovered from the published release; not captured during the original 12 executions.",
+  "executions": [
+    {
+      "task": "metrics",
+      "config": "A",
+      "trace": "traces/metrics-A.json",
+      "sha256": "e678cc5847f8743b8696b86e0d707465b40586bfdff2e390e4695798d359b2cb"
+    },
+    {
+      "task": "metrics",
+      "config": "B",
+      "trace": "traces/metrics-B.json",
+      "sha256": "ac16665a82d2558cc7cd501e7f4011b39f27d350d993af05eab1932a3c51a561"
+    },
+    {
+      "task": "imbalance",
+      "config": "A",
+      "trace": "traces/imbalance-A.json",
+      "sha256": "7cf7fe53746fe86da114783a528442bc804a9a77f874ff7bb3b2bf98bf718129"
+    },
+    {
+      "task": "imbalance",
+      "config": "B",
+      "trace": "traces/imbalance-B.json",
+      "sha256": "52dfbfb1f476b3076f6fc001632dd794af09d608094323fab640d2a32c4f806b"
+    },
+    {
+      "task": "source-degradation",
+      "config": "A",
+      "trace": "traces/source-degradation-A.json",
+      "sha256": "c8089052ccd5442a3d73276c61c458f6b03fa5135a39e959f8376b72aa21f68c"
+    },
+    {
+      "task": "source-degradation",
+      "config": "B",
+      "trace": "traces/source-degradation-B.json",
+      "sha256": "93a642fde230ec996dadce231e8204e17168ec3cde418f4c9a29cbdf14d3effa"
+    },
+    {
+      "task": "false-negatives",
+      "config": "A",
+      "trace": "traces/false-negatives-A.json",
+      "sha256": "5758cb1b65a1d05ff015a9bbc134dd32af2121be8a386d844484597556cb00c7"
+    },
+    {
+      "task": "false-negatives",
+      "config": "B",
+      "trace": "traces/false-negatives-B.json",
+      "sha256": "27b9834c7c6e294eea423817afa6fcb5afde858f580435d7498df69db1ac5300"
+    },
+    {
+      "task": "matched-comparison",
+      "config": "A",
+      "trace": "traces/matched-comparison-A.json",
+      "sha256": "cf9f62294159e92cc4f8382c658e277f5cb016e592dc8b0eb6ffc46978d987a4"
+    },
+    {
+      "task": "matched-comparison",
+      "config": "B",
+      "trace": "traces/matched-comparison-B.json",
+      "sha256": "162ceaddfb9eca01cbc3437657dbf3ecab7c58a9f1b9689a6c3fcb8ad5c02dfa"
+    },
+    {
+      "task": "missing-predictions",
+      "config": "A",
+      "trace": "traces/missing-predictions-A.json",
+      "sha256": "c3455af1faccd79925fc390e1bfb5f3fcd7aa5987e8a73b5797942be05476c8d"
+    },
+    {
+      "task": "missing-predictions",
+      "config": "B",
+      "trace": "traces/missing-predictions-B.json",
+      "sha256": "5a0d675eab1421f0a192d5c10540b0dcf3b0ec76a498b385dca0081f7570997f"
+    }
+  ]
+}

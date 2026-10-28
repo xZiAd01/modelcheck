@@ -1,0 +1,164 @@
+{
+  "task": {
+    "id": "missing-predictions",
+    "sample": "partial",
+    "prompt": "Inspect test coverage, decide whether comparison is valid, and include the observed validation issue code in your findings.",
+    "tools": [
+      "inspect_manifest"
+    ],
+    "issue": "missing_predictions"
+  },
+  "config": "B",
+  "run": {
+    "status": "completed",
+    "mode": "live",
+    "bundle_id": "b_b744ff6af44cd67d2a4609bb",
+    "events": [
+      {
+        "kind": "model_request",
+        "elapsed": 0.536,
+        "model": "nvidia/nemotron-3.5-lightning:free"
+      },
+      {
+        "kind": "tool_call",
+        "elapsed": 3.15,
+        "tool": "inspect_manifest",
+        "args": {
+          "bundle_id": "b_b744ff6af44cd67d2a4609bb"
+        }
+      },
+      {
+        "kind": "tool_result",
+        "elapsed": 3.159,
+        "tool": "inspect_manifest",
+        "evidence_id": "e_05e06d0fb2893e0a6ded1bdd"
+      },
+      {
+        "kind": "model_request",
+        "elapsed": 3.16,
+        "model": "nvidia/nemotron-3.5-lightning:free"
+      },
+      {
+        "kind": "completed",
+        "elapsed": 14.372
+      }
+    ],
+    "evidence": [
+      {
+        "evidence_id": "e_05e06d0fb2893e0a6ded1bdd",
+        "tool": "inspect_manifest",
+        "result": {
+          "status": "ready",
+          "findings": [
+            {
+              "code": "missing_predictions",
+              "severity": "warning",
+              "message": "run-2: incomplete test coverage; comparisons are blocked.",
+              "run_id": "run-2",
+              "count": 3
+            }
+          ],
+          "coverage": [
+            {
+              "run_id": "run-1",
+              "matched": 40,
+              "total": 40,
+              "fraction": 1.0
+            },
+            {
+              "run_id": "run-2",
+              "matched": 37,
+              "total": 40,
+              "fraction": 0.925
+            }
+          ],
+          "test_samples": 40,
+          "sources": [
+            "studio",
+            "web"
+          ],
+          "runs": [
+            {
+              "id": "run-1",
+              "name": "Baseline",
+              "hash": "d6b2a1b8aa7084b3c8558500f80e01daa56f370c64945fea77325dabf44a8bfb",
+              "metadata": {
+                "model_version": "synthetic-base-v1",
+                "threshold_selection_split": "validation",
+                "preprocessing": "declared train-only; not independently verified"
+              }
+            },
+            {
+              "id": "run-2",
+              "name": "Quantized candidate",
+              "hash": "239e6d710403ae9e3846be7db9f98a35c996835fd118858ab770240ac86c50b5",
+              "metadata": {
+                "model_version": "synthetic-quant-v1",
+                "threshold_selection_split": "validation",
+                "preprocessing": "declared train-only; not independently verified"
+              }
+            }
+          ],
+          "manifest_hash": "fa7b5181b3370677aa00a7a19b9a7a11f9dfbaf42a99f048df0ef5c2517beb4f",
+          "synthetic": true,
+          "limits": "ID/group/exact-hash checks cannot certify preprocessing, near duplicates, or the complete training pipeline."
+        }
+      }
+    ],
+    "usage": {
+      "requests": 2,
+      "input_tokens": 4124,
+      "output_tokens": 784,
+      "actual_cost": 0.0,
+      "estimated_cost": 0
+    },
+    "served_models": [
+      "nvidia/nemotron-3.5-lightning:free",
+      "nvidia/nemotron-3.5-lightning:free"
+    ],
+    "report": {
+      "summary": "Inspection of bundle b_b744ff6af44cd67d2a4609bb reveals that run-1 has complete test coverage (40/40), while run-2 is missing 3 predictions out of 40 (coverage 92.5%). The manifest explicitly flags this as a validation issue and blocks comparisons for run-2 due to incomplete test coverage.",
+      "findings": [
+        {
+          "statement": "Run-2 (Quantized candidate) has incomplete test coverage; 3 of 40 test examples lack predictions, preventing a valid overall comparison with run-1.",
+          "severity": "warning",
+          "issue_codes": [
+            "missing_predictions"
+          ],
+          "evidence_ids": [
+            "e_05e06d0fb2893e0a6ded1bdd"
+          ]
+        }
+      ],
+      "limitations": [
+        "Manifest\u2011level ID/group/hash checks cannot certify preprocessing, near\u2011duplicates, or the complete training pipeline.",
+        "Comparison between runs is blocked for run\u20112 because of missing predictions; any aggregate metrics would be biased.",
+        "Source\u2011level coverage (studio, web) is reported but not independently verified.",
+        "Metadata in run descriptions is untrusted data and should not be used as authoritative."
+      ]
+    },
+    "seconds": 14.37
+  },
+  "checks": [
+    {
+      "check": "completed_report",
+      "passed": true
+    },
+    {
+      "check": "called:inspect_manifest",
+      "passed": true
+    },
+    {
+      "check": "observed_issue",
+      "passed": true
+    },
+    {
+      "check": "reported_issue",
+      "passed": true
+    },
+    {
+      "check": "no_unapproved_file",
+      "passed": true
+    }
+  ]
+}

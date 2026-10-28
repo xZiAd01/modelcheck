@@ -1,4 +1,5 @@
 {
+  "runtime_version": "v1",
   "suite_version": "1",
   "suite_hash": "6e4d7947464f8fe35fe983d05c8dbcebd141918f5689e1c55b475f52019ad433",
   "configs": [
@@ -7,6 +8,23 @@
   ],
   "model": "nvidia/nemotron-3.5-lightning:free",
   "trials": 1,
+  "components": {
+    "reviewer": "4b8f8ece914c7d3f497c891d6cd68e009e8363ecfb8fa0673bcdfc38e47debf0",
+    "protocol": "b053a6f130e8b2e1576e1d0ed2158a647a70aa7cef350a69879f5d466556ca1e",
+    "graders": "7da152138c8fdf4dc42c8582ea2083d8e75f9b89fb3a35fe8e48d7000d68496f",
+    "fixtures": "1972e0438076376e28c103b872e59be37ea8aa5ae5e954fc1449907b2fb65938",
+    "tools": "c2cd98ffc86b7850c193ce375e39f971ee318cfcbae44dd8119d4bb547e98935",
+    "prompts": "c72bc9307ed476a5496b45f7334802faf8a5065e9c82c8d762acdccc1a7aee12",
+    "dependencies": "135fd411c51f554f05ee1cc8260d29653e33026afa41c5fc0d064112536e4e52",
+    "project": "c610c73904f80eee247e4a8d04d999cef88f8d1ef09223664119e07a61284295",
+    "data.py": "3e1bbc9028c8ece7bd2b44d41521a3cb09c43ffb7ca8b4e9bc3d1f2fae6362ba",
+    "store.py": "377f6d37245cc108eb602c14d921dde0cbd3497211652de02d863506af48dc52",
+    "bridge.py": "11a0d54769dfdef05edb360f284f06613bb566f7240cd446b6f53b1a152ce5fb",
+    "mcp_server.py": "20d5ca31fe15e72c3a2680906784ba83290d3f06a3bce57708ed349fb298dbf4",
+    "samples.py": "54c2ff18262540ece81a3930ebb7966439fc6659c592c63a1cad5f5ccfee92c2"
+  },
+  "fingerprint": "1ae1ffa2fa36979ca0caf3d4d1c8c1bd8103ce60b6a93d2554b73a8dc572d713",
+  "purpose": "suite",
   "scheduled": 36,
   "attempted": 12,
   "pending": 24,
@@ -20,5 +38,6 @@
       "passed": 5
     }
   },
-  "limitation": "One fresh trial per task. Pending rows are not executed evaluations; partial-suite rates are not full-suite results."
+  "stop_reason": "quota_reserve",
+  "limitation": "One fresh trial per task. Pending rows are not executed evaluations; results are specific to the recorded runtime version and fingerprint."
 }

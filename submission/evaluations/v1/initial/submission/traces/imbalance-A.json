@@ -1,0 +1,201 @@
+{
+  "task": {
+    "id": "imbalance",
+    "sample": "imbalance",
+    "prompt": "Inspect run-1 accuracy and positive recall. Explain why accuracy alone misleads on this imbalanced test set.",
+    "tools": [
+      "compute_metrics"
+    ],
+    "metric": {
+      "run_id": "run-1",
+      "accuracy": 0.9,
+      "recall": 0
+    }
+  },
+  "config": "A",
+  "run": {
+    "status": "completed",
+    "mode": "live",
+    "bundle_id": "b_78eb63ee9ad435f14373b755",
+    "events": [
+      {
+        "kind": "model_request",
+        "elapsed": 0.403,
+        "model": "nvidia/nemotron-3.5-lightning:free"
+      },
+      {
+        "kind": "tool_call",
+        "elapsed": 5.422,
+        "tool": "inspect_manifest",
+        "args": {
+          "bundle_id": "b_78eb63ee9ad435f14373b755"
+        }
+      },
+      {
+        "kind": "tool_result",
+        "elapsed": 5.432,
+        "tool": "inspect_manifest",
+        "evidence_id": "e_e7f5bab2fb4cb6a013af4229"
+      },
+      {
+        "kind": "model_request",
+        "elapsed": 5.433,
+        "model": "nvidia/nemotron-3.5-lightning:free"
+      },
+      {
+        "kind": "tool_call",
+        "elapsed": 7.978,
+        "tool": "compute_metrics",
+        "args": {
+          "run_id": "run-1",
+          "bundle_id": "b_78eb63ee9ad435f14373b755"
+        }
+      },
+      {
+        "kind": "tool_result",
+        "elapsed": 7.986,
+        "tool": "compute_metrics",
+        "evidence_id": "e_b32101eb4b4dbe280af74720"
+      },
+      {
+        "kind": "model_request",
+        "elapsed": 7.987,
+        "model": "nvidia/nemotron-3.5-lightning:free"
+      },
+      {
+        "kind": "completed",
+        "elapsed": 20.852
+      }
+    ],
+    "evidence": [
+      {
+        "evidence_id": "e_e7f5bab2fb4cb6a013af4229",
+        "tool": "inspect_manifest",
+        "result": {
+          "status": "ready",
+          "findings": [],
+          "coverage": [
+            {
+              "run_id": "run-1",
+              "matched": 40,
+              "total": 40,
+              "fraction": 1.0
+            },
+            {
+              "run_id": "run-2",
+              "matched": 40,
+              "total": 40,
+              "fraction": 1.0
+            }
+          ],
+          "test_samples": 40,
+          "sources": [
+            "studio",
+            "web"
+          ],
+          "runs": [
+            {
+              "id": "run-1",
+              "name": "Baseline",
+              "hash": "60c40c1f8543e133eb7d197d96d25cd21d349f20ea267295fb4261686fb7f0ca",
+              "metadata": {
+                "model_version": "synthetic-base-v1",
+                "threshold_selection_split": "validation",
+                "preprocessing": "declared train-only; not independently verified"
+              }
+            },
+            {
+              "id": "run-2",
+              "name": "Quantized candidate",
+              "hash": "f86bac8295f46d6715511f2127eb470f1969e171000ef4d9bea2bb4f6dacf2a4",
+              "metadata": {
+                "model_version": "synthetic-quant-v1",
+                "threshold_selection_split": "validation",
+                "preprocessing": "declared train-only; not independently verified"
+              }
+            }
+          ],
+          "manifest_hash": "51a52f7d36a7a643fc57c2239bba75409d23c01aa3123b493f6e40b656b400ab",
+          "synthetic": true,
+          "limits": "ID/group/exact-hash checks cannot certify preprocessing, near duplicates, or the complete training pipeline."
+        }
+      },
+      {
+        "evidence_id": "e_b32101eb4b4dbe280af74720",
+        "tool": "compute_metrics",
+        "result": {
+          "run_id": "run-1",
+          "source": null,
+          "counts": {
+            "tn": 36,
+            "fp": 0,
+            "fn": 4,
+            "tp": 0
+          },
+          "n": 40,
+          "total": 40,
+          "coverage": 1.0,
+          "population": "full test set",
+          "accuracy": 0.9,
+          "precision": null,
+          "recall": 0.0,
+          "f1": 0.0,
+          "undefined_reason": "Null metrics have a zero denominator; null does not mean zero."
+        }
+      }
+    ],
+    "usage": {
+      "requests": 3,
+      "input_tokens": 6603,
+      "output_tokens": 1004,
+      "actual_cost": 0.0,
+      "estimated_cost": 0
+    },
+    "served_models": [
+      "nvidia/nemotron-3.5-lightning:free",
+      "nvidia/nemotron-3.5-lightning:free",
+      "nvidia/nemotron-3.5-lightning:free"
+    ],
+    "report": {
+      "summary": "Run\u20111 (Baseline) achieved 90\u202f% accuracy on a 40\u2011sample test set, but its positive recall was 0\u202f%. The test set contains 4 positive examples (10\u202f% prevalence). Accuracy is high only because the model predicts the majority negative class for all instances, missing every positive case.",
+      "findings": [
+        {
+          "statement": "Accuracy of 0.9 is misleading on this imbalanced test set; the model achieves the same score by simply predicting the negative class for every example, resulting in zero positive recall.",
+          "severity": "warning",
+          "issue_codes": [
+            "imbalanced-data",
+            "accuracy-mislead"
+          ],
+          "evidence_ids": [
+            "e_b32101eb4b4dbe280af74720",
+            "e_e7f5bab2fb4cb6a013af4229"
+          ]
+        }
+      ],
+      "limitations": [
+        "Manifest is synthetic; preprocessing has not been independently verified.",
+        "Coverage checks cannot certify the complete training pipeline or rule out near\u2011duplicates.",
+        "Metrics are computed on the full test set; no source\u2011level breakdown is available beyond the overall population."
+      ]
+    },
+    "seconds": 20.85
+  },
+  "checks": [
+    {
+      "check": "completed_report",
+      "passed": true
+    },
+    {
+      "check": "called:compute_metrics",
+      "passed": true
+    },
+    {
+      "check": "known_metric_outcome",
+      "passed": true
+    },
+    {
+      "check": "no_unapproved_file",
+      "passed": true
+    }
+  ]
+}

@@ -14,7 +14,7 @@ def main():
     sub=p.add_subparsers(dest='command',required=True)
     serve=sub.add_parser('serve');serve.add_argument('--port',type=int,default=8787)
     ask=sub.add_parser('ask');ask.add_argument('question');ask.add_argument('--sample',default='comparison');ask.add_argument('--config',choices=['A','B'],default='B')
-    ev=sub.add_parser('eval');ev.add_argument('--config',nargs='+',choices=['A','B'],default=['A','B']);ev.add_argument('--trials',type=int,default=1);ev.add_argument('--limit',type=int)
+    ev=sub.add_parser('eval');ev.add_argument('--config',nargs='+',choices=['A','B'],default=['A','B']);ev.add_argument('--trials',type=int,default=1);selection=ev.add_mutually_exclusive_group();selection.add_argument('--limit',type=int);selection.add_argument('--task',nargs='+',dest='task_ids');ev.add_argument('--runtime-version',choices=['v1','v2'],default='v1');ev.add_argument('--output',type=Path)
     sub.add_parser('check');sub.add_parser('samples')
     a=p.parse_args()
     if a.command=='serve':
@@ -25,7 +25,7 @@ def main():
         asyncio.run(ask_once(a))
     elif a.command=='eval':
         from .evaluation import evaluate
-        sys.exit(asyncio.run(evaluate(a.config,a.trials,a.limit)))
+        sys.exit(asyncio.run(evaluate(a.config,a.trials,a.limit,a.runtime_version,a.output,task_ids=a.task_ids)))
     elif a.command=='samples':
         from .samples import CATALOG
         print(json.dumps(CATALOG,indent=2))
@@ -34,8 +34,8 @@ def main():
         if r.returncode:sys.exit(r.returncode)
         if not os.getenv('OPENROUTER_API_KEY'):
             print('INCOMPLETE: deterministic checks passed; live smoke needs OPENROUTER_API_KEY.');sys.exit(2)
-        from .evaluation import evaluate
-        sys.exit(asyncio.run(evaluate(['B'],1,5)))
+        from .evaluation import smoke
+        sys.exit(asyncio.run(smoke()))
 
 async def ask_once(a):
     from .app import PROJECT

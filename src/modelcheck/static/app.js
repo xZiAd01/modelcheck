@@ -76,7 +76,7 @@ async function health() {
   live = data.api_key_configured;
   $('run-agent').disabled = !bundleId || !live;
   $('run-agent').setAttribute('aria-disabled', String(reviewRunning));
-  $('provider-status').textContent = live ? `Live review ready · ${data.model}` : 'Live review needs an OpenRouter key in .env. Data inspection and recorded review are available.';
+  $('provider-status').textContent = live ? `Live review ready · ${data.runtime_version || 'legacy'} · ${data.model}` : 'Live review needs an OpenRouter key in .env. Data inspection and recorded review are available.';
 }
 function describe() {
   const sample = samples.find(item => item.id === $('scenario').value);
@@ -179,8 +179,9 @@ function renderReview(data) {
     area.append(node('p', 'The agent is investigating. Completed tool events appear in Activity & evidence.', 'help'));
   } else {
     const report = data.report || {};
-    badge('review-mode', data.mode === 'deterministic' ? 'Tools only · no LLM' : data.mode === 'recorded' ? 'Recorded AI review' : 'Live AI review', data.mode === 'deterministic' ? 'neutral' : 'good');
+    badge('review-mode', data.mode === 'deterministic' ? 'Tools only · no LLM' : data.mode === 'recorded' ? 'Recorded AI review · v1' : data.mode === 'controlled-test' ? `Controlled test · ${data.runtime_version}` : `Live AI review · ${data.runtime_version || 'legacy'}`, data.mode === 'deterministic' ? 'neutral' : 'good');
     area.append(node('p', report.summary || 'Inspection complete.', 'review-summary'));
+    if (data.protocol?.source === 'host') area.append(node('p', `Review protocol ${data.protocol.version} loaded by the host · SHA-256 ${data.protocol.sha256}`, 'digest'));
     for (const finding of report.findings || []) {
       const element = node('div', finding.statement, 'finding');
       const refs = node('small', (finding.evidence_ids || []).join(' · '));
@@ -196,7 +197,7 @@ function renderReview(data) {
   ['draft-proposal', 'export-json', 'export-md'].forEach(id => { $(id).disabled = !done; });
   const log = $('trace-log');
   log.replaceChildren();
-  (data.events || []).forEach(event => log.append(node('div', `${event.kind.replaceAll('_', ' ')}${event.tool ? ' · ' + event.tool : ''}${event.model ? ' · ' + event.model : ''}${event.error ? ' · ' + (event.error.message || event.error.code) : ''}`, 'trace-event')));
+  (data.events || []).forEach(event => log.append(node('div', `${event.kind.replaceAll('_', ' ')}${event.tool ? ' · ' + event.tool : ''}${event.model ? ' · ' + event.model : ''}${event.kind === 'protocol_loaded' ? ' · host · version ' + event.version + ' · ' + event.sha256 : ''}${event.error ? ' · ' + (event.error.message || event.error.code) : ''}`, 'trace-event')));
   $('trace-count').textContent = `${data.events?.length || 0} events`;
   const receipt = $('evidence-receipt');
   receipt.replaceChildren();
@@ -228,7 +229,7 @@ async function runAgent() {
           cancelPolling();
           await health();
           if (data.status === 'failed') notice(data.error?.message || 'Review failed.', true);
-          else announce(`AI review complete. ${data.report?.findings?.length || 0} findings. Review the evidence before preparing a follow-up.`);
+          else announce(`Review complete. ${data.report?.findings?.length || 0} ${data.report?.findings?.length === 1 ? 'finding' : 'findings'}. Review the evidence before preparing a follow-up.`);
           return;
         }
         pollTimer = setTimeout(poll, 1000);
@@ -389,7 +390,7 @@ $('replay-review').onclick = safe(async () => {
   $('validation-findings').replaceChildren();
   renderReview(data);
   await health();
-  announce('Recorded AI review loaded. This is a replay; no model request was sent.');
+  announce('Recorded AI review v1 loaded. This is a replay; no model request was sent.');
 });
 document.querySelectorAll('input,textarea').forEach(input => {
   input.addEventListener(input.type === 'file' ? 'change' : 'input', () => {

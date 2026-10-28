@@ -1,6 +1,7 @@
 """Bounded tool-calling loop; the provider never controls the write executor."""
 from __future__ import annotations
 import asyncio
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -30,13 +31,58 @@ Omit source to inspect all sources; do not pass the string "none". Use at most o
 inspect_error_slice call when compare_runs already gives source-level confusion counts.
 After enough evidence, return the final report promptly rather than repeating checks.
 Available skill: review-experiment — review populations, errors, evidence and next experiments.
-Read it with load_review_protocol when useful. Return only JSON at the end:
+The host supplies its complete text before inference. For comparison conclusions, call
+compare_runs; separate metric calls alone do not establish comparable populations.
+Return only JSON at the end:
 {\"summary\":\"...\",\"findings\":[{\"statement\":\"...\",\"severity\":\"info|warning|error\",\"issue_codes\":[\"...\"],\"evidence_ids\":[\"e_...\"]}],\"limitations\":[\"...\"]}.
 Error results are observations; recover where possible. Do not invent evidence IDs.
 """
-DELTA="""Review procedure: load_review_protocol first, then inspect_manifest before interpreting
+DELTA="""Review procedure: the protocol is already supplied by the host. Call inspect_manifest before interpreting
 metrics or comparing populations. For comparison questions inspect source slices as well as
 aggregate metrics. Explain coverage and missing provenance. Cite measured evidence in every finding."""
+
+RUNTIME_VERSION="v2"
+PROTOCOL_VERSION="1"
+CONTEXT_LIMIT=21000
+
+
+def load_protocol():
+    try:
+        with SKILL.open("rb") as stream:
+            raw=stream.read(4097)
+    except OSError as exc:
+        raise Problem("protocol_unavailable","The packaged review protocol is unavailable",503) from exc
+    if not raw or len(raw)>4096:
+        raise Problem("protocol_invalid","The review protocol must contain 1–4096 UTF-8 bytes",503)
+    try:
+        text=raw.decode("utf-8")
+    except UnicodeDecodeError as exc:
+        raise Problem("protocol_invalid","The review protocol must be valid UTF-8",503) from exc
+    if not text.strip():
+        raise Problem("protocol_invalid","The review protocol must not be blank",503)
+    return {"name":"review-experiment","version":PROTOCOL_VERSION,
+            "sha256":hashlib.sha256(raw).hexdigest(),"source":"host","bytes":len(raw)},text
+
+
+def compact_history(messages,schemas):
+    removed=0
+    while len(json.dumps(messages))+len(json.dumps(schemas))>CONTEXT_LIMIT:
+        rounds=[];i=2
+        while i<len(messages):
+            message=messages[i]
+            if message.get("role")=="assistant" and message.get("tool_calls"):
+                expected={call["id"] for call in message["tool_calls"]}
+                j=i+1;observed=[]
+                while j<len(messages) and messages[j].get("role")=="tool":
+                    observed.append(messages[j].get("tool_call_id"));j+=1
+                if len(observed)==len(expected) and set(observed)==expected:rounds.append((i,j))
+                i=j
+            else:i+=1
+        if len(rounds)<2:break
+        start,end=rounds[0]
+        del messages[start:end];removed+=1
+    return removed
+
 
 class Finding(BaseModel):
     model_config=ConfigDict(extra="forbid")
@@ -70,7 +116,7 @@ class Reviewer:
     async def run(self,owner,review_id,bundle_id,question,config="B",allow_fallback=True,completion=None,request_limit=8):
         store=self.store
         state=store.get(owner,"review",review_id)
-        state.update(status="running",events=[],evidence=[],usage={"requests":0,"input_tokens":0,"output_tokens":0,"actual_cost":None,"estimated_cost":0},served_models=[])
+        state.update(status="running",runtime_version=RUNTIME_VERSION,protocol=None,events=[],evidence=[],usage={"requests":0,"input_tokens":0,"output_tokens":0,"actual_cost":None,"estimated_cost":0},served_models=[])
         store.put(owner,"review",state,review_id)
         start=time.monotonic();tool_count=0;repair=False
         def event(kind,**values):
@@ -82,6 +128,12 @@ class Reviewer:
         schemas=self.bridge.schemas()+local_schemas()
         client=None
         try:
+            protocol,protocol_text=load_protocol()
+            state["protocol"]=protocol
+            tool_count=1
+            state["usage"]["tool_executions"]=tool_count
+            messages[0]["content"]+="\n\nHost-loaded review protocol (trusted packaged guidance):\n"+protocol_text
+            event("protocol_loaded",**protocol)
             if completion is None:
                 key=os.getenv("OPENROUTER_API_KEY","")
                 if not key:raise Problem("missing_api_key","Configure OPENROUTER_API_KEY in modelcheck/.env to run live analysis",503)
@@ -97,13 +149,9 @@ class Reviewer:
                 elapsed=time.monotonic()-start
                 if elapsed>=180 or state["usage"]["input_tokens"]+state["usage"]["output_tokens"]>=30000:
                     raise Problem("budget_exhausted","Review stopped at its time/token budget",429)
-                # Drop complete old tool rounds, retaining evidence outside the model window.
-                while len(json.dumps(messages))+len(json.dumps(schemas))>21000 and len(messages)>4:
-                    end=3
-                    while end<len(messages) and messages[end].get("role")=="tool":end+=1
-                    del messages[2:end]
-                    event("context_compacted",message="Older tool rounds removed; evidence remains available in the report.")
-                if len(json.dumps(messages))+len(json.dumps(schemas))>21000:
+                removed=compact_history(messages,schemas)
+                if removed:event("context_compacted",rounds=removed,message="Older complete tool rounds removed; protocol and newest evidence retained.")
+                if len(json.dumps(messages))+len(json.dumps(schemas))>CONTEXT_LIMIT:
                     raise Problem("context_budget","Question/tool results exceeded the context budget",429)
                 state["usage"]["requests"]+=1
                 event("model_request",model=model)
@@ -130,7 +178,8 @@ class Reviewer:
                 if msg.tool_calls:
                     for call in msg.tool_calls:
                         tool_count+=1
-                        if tool_count>16:raise Problem("tool_budget","Maximum 16 tool calls per review",429)
+                        if tool_count>16:raise Problem("tool_budget","Maximum 16 tool executions per review, including protocol preload",429)
+                        state["usage"]["tool_executions"]=tool_count
                         name=call.function.name
                         try:
                             args=json.loads(call.function.arguments)
@@ -138,7 +187,7 @@ class Reviewer:
                             event("tool_call",tool=name,args=args)
                             if name=="load_review_protocol":
                                 if args:raise Problem("bad_arguments","The procedure loader takes no arguments")
-                                result={"procedure":"review-experiment","version":"1","text":SKILL.read_text()}
+                                result={"procedure":protocol["name"],"version":protocol["version"],"sha256":protocol["sha256"],"text":protocol_text}
                             elif name=="save_experiment_spec":
                                 action=store.propose(owner,review_id,bundle_id,args)
                                 state["pending_action"]=action

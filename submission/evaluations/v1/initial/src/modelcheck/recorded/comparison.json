@@ -1,0 +1,349 @@
+{
+  "status": "completed",
+  "mode": "live",
+  "bundle_id": "b_231d474f2f08cda7cb008cac",
+  "events": [
+    {
+      "kind": "model_request",
+      "elapsed": 0.457,
+      "model": "nvidia/nemotron-3.5-lightning:free"
+    },
+    {
+      "kind": "tool_call",
+      "elapsed": 7.852,
+      "tool": "load_review_protocol",
+      "args": {}
+    },
+    {
+      "kind": "tool_result",
+      "elapsed": 7.856,
+      "tool": "load_review_protocol",
+      "evidence_id": "e_c67e2e8ac696d180558d5bac"
+    },
+    {
+      "kind": "model_request",
+      "elapsed": 7.858,
+      "model": "nvidia/nemotron-3.5-lightning:free"
+    },
+    {
+      "kind": "tool_call",
+      "elapsed": 9.375,
+      "tool": "inspect_manifest",
+      "args": {
+        "bundle_id": "b_231d474f2f08cda7cb008cac"
+      }
+    },
+    {
+      "kind": "tool_result",
+      "elapsed": 9.387,
+      "tool": "inspect_manifest",
+      "evidence_id": "e_b80f5603e739dc66857aea14"
+    },
+    {
+      "kind": "model_request",
+      "elapsed": 9.388,
+      "model": "nvidia/nemotron-3.5-lightning:free"
+    },
+    {
+      "kind": "tool_call",
+      "elapsed": 10.562,
+      "tool": "compare_runs",
+      "args": {
+        "bundle_id": "b_231d474f2f08cda7cb008cac"
+      }
+    },
+    {
+      "kind": "tool_result",
+      "elapsed": 10.571,
+      "tool": "compare_runs",
+      "evidence_id": "e_671af96d419911d25babe16b"
+    },
+    {
+      "kind": "model_request",
+      "elapsed": 10.573,
+      "model": "nvidia/nemotron-3.5-lightning:free"
+    },
+    {
+      "kind": "completed",
+      "elapsed": 26.506
+    }
+  ],
+  "evidence": [
+    {
+      "evidence_id": "e_c67e2e8ac696d180558d5bac",
+      "tool": "load_review_protocol",
+      "result": {
+        "procedure": "review-experiment",
+        "version": "1",
+        "text": "---\nname: review-experiment\ndescription: Review binary-classification experiment exports for comparable populations, measured errors and evidence-backed follow-up experiments.\n---\n\n# Review an experiment\n\nInspect the manifest and validation findings before interpreting a run. Quarantined\nbundles can be inspected but cannot produce trustworthy metrics.\n\nCompare only complete, matching test populations. For partial predictions, say\nwhich examples were measured and show coverage. Check source slices before treating\nan aggregate change as uniform improvement. Distinguish a numerical decomposition\nfrom an explanation of its cause.\n\nUse compute_metrics, compare_runs and inspect_error_slice to establish claims.\nCite their evidence IDs. Explicit ID/group/hash overlap establishes overlap in the\nsupplied manifests; it does not certify a whole training pipeline. Missing\npreprocessing or threshold provenance is not assessable from prediction files.\n\nPropose one follow-up change, selected on validation data. Preserve a held-out test\nset for the final assessment. Request save_experiment_spec only when the user asks\nfor a proposal/save; the tool queues an exact specification for human approval.\nDo not claim it was saved until the approval handler confirms execution.\n"
+      }
+    },
+    {
+      "evidence_id": "e_b80f5603e739dc66857aea14",
+      "tool": "inspect_manifest",
+      "result": {
+        "status": "ready",
+        "findings": [],
+        "coverage": [
+          {
+            "run_id": "run-1",
+            "matched": 40,
+            "total": 40,
+            "fraction": 1.0
+          },
+          {
+            "run_id": "run-2",
+            "matched": 40,
+            "total": 40,
+            "fraction": 1.0
+          }
+        ],
+        "test_samples": 40,
+        "sources": [
+          "studio",
+          "web"
+        ],
+        "runs": [
+          {
+            "id": "run-1",
+            "name": "Baseline",
+            "hash": "d6b2a1b8aa7084b3c8558500f80e01daa56f370c64945fea77325dabf44a8bfb",
+            "metadata": {
+              "model_version": "synthetic-base-v1",
+              "threshold_selection_split": "validation",
+              "preprocessing": "declared train-only; not independently verified"
+            }
+          },
+          {
+            "id": "run-2",
+            "name": "Quantized candidate",
+            "hash": "c7b39df4b8397ed43fd65eb112bf6a173856d40b792f6cb0f0b5c244bd635acc",
+            "metadata": {
+              "model_version": "synthetic-quant-v1",
+              "threshold_selection_split": "validation",
+              "preprocessing": "declared train-only; not independently verified"
+            }
+          }
+        ],
+        "manifest_hash": "fa7b5181b3370677aa00a7a19b9a7a11f9dfbaf42a99f048df0ef5c2517beb4f",
+        "synthetic": true,
+        "limits": "ID/group/exact-hash checks cannot certify preprocessing, near duplicates, or the complete training pipeline."
+      }
+    },
+    {
+      "evidence_id": "e_671af96d419911d25babe16b",
+      "tool": "compare_runs",
+      "result": {
+        "baseline": {
+          "run_id": "run-1",
+          "source": null,
+          "counts": {
+            "tn": 18,
+            "fp": 2,
+            "fn": 2,
+            "tp": 18
+          },
+          "n": 40,
+          "total": 40,
+          "coverage": 1.0,
+          "population": "full test set",
+          "accuracy": 0.9,
+          "precision": 0.9,
+          "recall": 0.9,
+          "f1": 0.9,
+          "undefined_reason": "Null metrics have a zero denominator; null does not mean zero."
+        },
+        "candidate": {
+          "run_id": "run-2",
+          "source": null,
+          "counts": {
+            "tn": 19,
+            "fp": 1,
+            "fn": 5,
+            "tp": 15
+          },
+          "n": 40,
+          "total": 40,
+          "coverage": 1.0,
+          "population": "full test set",
+          "accuracy": 0.85,
+          "precision": 0.9375,
+          "recall": 0.75,
+          "f1": 0.8333333333333334,
+          "undefined_reason": "Null metrics have a zero denominator; null does not mean zero."
+        },
+        "deltas": {
+          "accuracy": -0.050000000000000044,
+          "precision": 0.03749999999999998,
+          "recall": -0.15000000000000002,
+          "f1": -0.06666666666666665
+        },
+        "slices": [
+          {
+            "source": "studio",
+            "n": 20,
+            "baseline": {
+              "run_id": "run-1",
+              "source": "studio",
+              "counts": {
+                "tn": 9,
+                "fp": 1,
+                "fn": 1,
+                "tp": 9
+              },
+              "n": 20,
+              "total": 20,
+              "coverage": 1.0,
+              "population": "full test set",
+              "accuracy": 0.9,
+              "precision": 0.9,
+              "recall": 0.9,
+              "f1": 0.9,
+              "undefined_reason": "Null metrics have a zero denominator; null does not mean zero."
+            },
+            "candidate": {
+              "run_id": "run-2",
+              "source": "studio",
+              "counts": {
+                "tn": 9,
+                "fp": 1,
+                "fn": 0,
+                "tp": 10
+              },
+              "n": 20,
+              "total": 20,
+              "coverage": 1.0,
+              "population": "full test set",
+              "accuracy": 0.95,
+              "precision": 0.9090909090909091,
+              "recall": 1.0,
+              "f1": 0.9523809523809523,
+              "undefined_reason": "Null metrics have a zero denominator; null does not mean zero."
+            }
+          },
+          {
+            "source": "web",
+            "n": 20,
+            "baseline": {
+              "run_id": "run-1",
+              "source": "web",
+              "counts": {
+                "tn": 9,
+                "fp": 1,
+                "fn": 1,
+                "tp": 9
+              },
+              "n": 20,
+              "total": 20,
+              "coverage": 1.0,
+              "population": "full test set",
+              "accuracy": 0.9,
+              "precision": 0.9,
+              "recall": 0.9,
+              "f1": 0.9,
+              "undefined_reason": "Null metrics have a zero denominator; null does not mean zero."
+            },
+            "candidate": {
+              "run_id": "run-2",
+              "source": "web",
+              "counts": {
+                "tn": 10,
+                "fp": 0,
+                "fn": 5,
+                "tp": 5
+              },
+              "n": 20,
+              "total": 20,
+              "coverage": 1.0,
+              "population": "full test set",
+              "accuracy": 0.75,
+              "precision": 1.0,
+              "recall": 0.5,
+              "f1": 0.6666666666666666,
+              "undefined_reason": "Null metrics have a zero denominator; null does not mean zero."
+            }
+          }
+        ],
+        "interpretation": "Deltas are candidate minus baseline, in fraction units (multiply by 100 for percentage points). This is descriptive, not a causal or significance test."
+      }
+    }
+  ],
+  "usage": {
+    "requests": 4,
+    "input_tokens": 10947,
+    "output_tokens": 1441,
+    "actual_cost": 0.0,
+    "estimated_cost": 0
+  },
+  "served_models": [
+    "nvidia/nemotron-3.5-lightning:free",
+    "nvidia/nemotron-3.5-lightning:free",
+    "nvidia/nemotron-3.5-lightning:free",
+    "nvidia/nemotron-3.5-lightning:free"
+  ],
+  "report": {
+    "summary": "Comparison of run-1 (baseline) and run-2 (quantized candidate) on bundle b_231d474f2f08cda7cb008cac. Both runs cover the full 40\u2011example test set with equal source distribution (studio, web). Overall metrics show a small accuracy loss and a more pronounced recall drop. Per\u2011source slices reveal that the recall decline is driven entirely by the web source.",
+    "findings": [
+      {
+        "statement": "Overall accuracy decreased by 5\u202fpercentage points (0.90 \u2192 0.85).",
+        "severity": "info",
+        "issue_codes": [
+          "m_accuracy_delta"
+        ],
+        "evidence_ids": [
+          "e_671af96d419911d25babe16b"
+        ]
+      },
+      {
+        "statement": "Overall precision improved by about 3.7\u202fpercentage points (0.90 \u2192 0.9375).",
+        "severity": "info",
+        "issue_codes": [
+          "m_precision_delta"
+        ],
+        "evidence_ids": [
+          "e_671af96d419911d25babe16b"
+        ]
+      },
+      {
+        "statement": "Overall recall decreased by 15\u202fpercentage points (0.90 \u2192 0.75), the largest measured change.",
+        "severity": "warning",
+        "issue_codes": [
+          "m_recall_delta"
+        ],
+        "evidence_ids": [
+          "e_671af96d419911d25babe16b"
+        ]
+      },
+      {
+        "statement": "F1 score declined by 6.7\u202fpercentage points (0.90 \u2192 0.8333).",
+        "severity": "info",
+        "issue_codes": [
+          "m_f1_delta"
+        ],
+        "evidence_ids": [
+          "e_671af96d419911d25babe16b"
+        ]
+      },
+      {
+        "statement": "Per\u2011source analysis: in the studio slice, recall actually improved (0.90 \u2192 1.0) and F1 rose to 0.952. In the web slice, recall fell sharply from 0.90 to 0.50 (a 40\u202fpercentage\u2011point drop), precision rose to 1.0, but accuracy dropped to 0.75 and F1 fell to 0.667.",
+        "severity": "warning",
+        "issue_codes": [
+          "m_web_recall_drop"
+        ],
+        "evidence_ids": [
+          "e_671af96d419911d25babe16b"
+        ]
+      }
+    ],
+    "limitations": [
+      "Manifest and run metadata are untrusted data; preprocessing provenance is not independently verified.",
+      "Overlap of IDs/hashes does not certify a complete training pipeline.",
+      "Comparison is based on the same 40 test examples; results may not generalise to other data.",
+      "No statistical significance testing is performed; deltas are descriptive only.",
+      "The held\u2011out test set was not used for tuning; all success criteria should be validated on a separate validation set."
+    ]
+  },
+  "seconds": 26.51,
+  "recorded_date": "2026-10-28",
+  "notice": "Recorded real model run on synthetic data. Replaying uses no model requests."
+}

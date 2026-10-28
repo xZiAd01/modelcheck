@@ -6,7 +6,7 @@ import zipfile
 
 ROOT=Path(__file__).resolve().parents[1]
 OUTPUT=ROOT.parent/'output'
-EXCLUDED={'.git','.env','.venv','runtime','.build','__pycache__','.pytest_cache','node_modules','.DS_Store'}
+EXCLUDED={'.evaluation.lock','.git','.env','.venv','runtime','.build','__pycache__','.pytest_cache','node_modules','.DS_Store'}
 
 def allowed(p):
     rel=p.relative_to(ROOT)

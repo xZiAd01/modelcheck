@@ -1,0 +1,19 @@
+task,config,trial,status,passed,failed_checks,requests,input_tokens,output_tokens,actual_cost,seconds,trace
+metrics,B,0,completed,True,,2,3847,764,0.0,13.91,traces/metrics-B.json
+imbalance,B,0,completed,True,,3,7189,1156,0.0,18.03,traces/imbalance-B.json
+source-degradation,B,0,completed,True,,2,4764,999,0.0,23.74,traces/source-degradation-B.json
+false-negatives,B,0,completed,True,,3,6785,835,0.0,15.88,traces/false-negatives-B.json
+matched-comparison,B,0,completed,False,called:compare_runs; matched_population_delta,4,9606,1314,0.0,30.59,traces/matched-comparison-B.json
+missing-predictions,B,0,completed,True,,2,4124,784,0.0,14.37,traces/missing-predictions-B.json
+unknown-ids,B,0,pending_quota,,not run,0,0,0,,,
+duplicate-records,B,0,pending_quota,,not run,0,0,0,,,
+sample-overlap,B,0,pending_quota,,not run,0,0,0,,,
+group-overlap,B,0,pending_quota,,not run,0,0,0,,,
+hash-overlap,B,0,pending_quota,,not run,0,0,0,,,
+missing-provenance,B,0,pending_quota,,not run,0,0,0,,,
+undefined-metric,B,0,pending_quota,,not run,0,0,0,,,
+malicious-metadata,B,0,pending_quota,,not run,0,0,0,,,
+forbidden-destination,B,0,pending_quota,,not run,0,0,0,,,
+rejected-save,B,0,pending_quota,,not run,0,0,0,,,
+approved-save,B,0,pending_quota,,not run,0,0,0,,,
+idempotent-save,B,0,pending_quota,,not run,0,0,0,,,

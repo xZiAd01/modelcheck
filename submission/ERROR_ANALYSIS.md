@@ -1,4 +1,4 @@
-# Evaluation status
+# V1 evaluation analysis
 
 Executed 12 of 36 scheduled reviews; 24 remain pending.
 
@@ -47,9 +47,19 @@ B / matched-comparison produced the correct overall accuracy difference using tw
 
 - Both planned Gemma free endpoints returned provider 429 errors. A verified free NVIDIA endpoint served the recorded runs.
 - An early unscored development investigation hit the 30,000-token budget after a proposal request. It did not produce a completed report and is not included in the 12 executed final-suite rows.
-- The procedure-loader instruction did not consistently cause retrieval in observed traces. Procedure retrieval is prompted rather than enforced by the host.
+- V1 procedure-loader instructions did not consistently cause retrieval in observed traces. The frozen v1 engine retains that behavior; v2 supplies the protocol from the host before inference.
 - Code graders check selected facts, tool use and action outcomes. They do not comprehensively certify all natural-language claims. In the recorded comparison, a statement about the test set remaining untouched exceeded what exported predictions alone establish. The interface flags this unsupported provenance claim alongside the original report.
 
-## Proposed evaluation revision
+## V2 implementation and pending evidence
 
-A future revision could retrieve the procedure at the host level and make the compare_runs requirement explicit. Revised prompts or graders require a new version and fresh evaluation; the current v1 results remain the baseline. Reused synthetic fixtures provide regression coverage, with generalization requiring additional data.
+V2 loads the packaged protocol before the first provider request, records its version and SHA-256 and preserves it during compaction. Failure to load a valid protocol stops the review before inference. Comparison instructions explicitly require compare_runs for comparison conclusions. These changes guarantee protocol availability, while model adherence and live task outcomes still require measurement.
+
+The 56 automated tests cover the protocol, permissions and evaluator changes. Controlled-provider browser testing verified the host event, version labels, approval and downloaded JSON without using OpenRouter inference.
+
+V2 has zero executed live reviews and 36 pending. Its live evaluation is gated on completion of the v1 full suite. No measured improvement or v2 live pass rate is established. New runtime fingerprints use a separate directory, and targeted reruns retain their own scores.
+
+## Evidence preservation
+
+The initial snapshot contains unchanged v1 source, tasks, traces and reports with checksums. The original 12 executions are labeled as imported evidence; configuration metadata was recovered from the published source. V1's pending reviews use the byte-identical legacy reviewer and unchanged fixtures, graders, protocol and dependencies. New traces capture runtime fingerprints and execution provenance directly.
+
+Generated coverage belongs in COVERAGE.md. The evaluator does not overwrite this narrative. Missing keys and quota stops retain executed rows. Atomic checkpoints and trace checksums support recovery after an interrupted write without repeating a completed provider investigation.

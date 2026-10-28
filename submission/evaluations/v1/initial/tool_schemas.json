@@ -1,0 +1,211 @@
+[
+  {
+    "type": "function",
+    "function": {
+      "name": "inspect_manifest",
+      "description": "Inspect validation, test coverage, provenance and split overlap. Always inspect before a comparison.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "bundle_id": {
+            "title": "Bundle Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "bundle_id"
+        ],
+        "title": "inspect_manifestArguments",
+        "additionalProperties": false
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "compute_metrics",
+      "description": "Compute confusion counts, accuracy, precision, recall and F1. Source optionally selects one source; all rates are fractions.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "bundle_id": {
+            "title": "Bundle Id",
+            "type": "string"
+          },
+          "run_id": {
+            "title": "Run Id",
+            "type": "string"
+          },
+          "source": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Source"
+          }
+        },
+        "required": [
+          "bundle_id",
+          "run_id"
+        ],
+        "title": "compute_metricsArguments",
+        "additionalProperties": false
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "compare_runs",
+      "description": "Compare both complete runs on the same test examples, overall and per source. Refuses incomplete populations.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "bundle_id": {
+            "title": "Bundle Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "bundle_id"
+        ],
+        "title": "compare_runsArguments",
+        "additionalProperties": false
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "inspect_error_slice",
+      "description": "Inspect false negatives (fn) or false positives (fp); returns at most 20 sample IDs, with pagination.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "bundle_id": {
+            "title": "Bundle Id",
+            "type": "string"
+          },
+          "run_id": {
+            "title": "Run Id",
+            "type": "string"
+          },
+          "kind": {
+            "default": "fn",
+            "title": "Kind",
+            "type": "string"
+          },
+          "source": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Source"
+          },
+          "offset": {
+            "default": 0,
+            "title": "Offset",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "bundle_id",
+          "run_id"
+        ],
+        "title": "inspect_error_sliceArguments",
+        "additionalProperties": false
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "load_review_protocol",
+      "description": "Retrieve the review-experiment skill for experiment-review guidance.",
+      "parameters": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "save_experiment_spec",
+      "description": "Request human approval for saving one experiment specification. This does not execute a save. No path parameter is allowed.",
+      "parameters": {
+        "additionalProperties": false,
+        "properties": {
+          "objective": {
+            "maxLength": 500,
+            "minLength": 5,
+            "title": "Objective",
+            "type": "string"
+          },
+          "change": {
+            "maxLength": 1000,
+            "minLength": 5,
+            "title": "Change",
+            "type": "string"
+          },
+          "selection_rule": {
+            "maxLength": 500,
+            "minLength": 5,
+            "title": "Selection Rule",
+            "type": "string"
+          },
+          "success_criterion": {
+            "maxLength": 500,
+            "minLength": 5,
+            "title": "Success Criterion",
+            "type": "string"
+          },
+          "run_ids": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 2,
+            "minItems": 1,
+            "title": "Run Ids",
+            "type": "array"
+          },
+          "evidence_ids": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 12,
+            "minItems": 1,
+            "title": "Evidence Ids",
+            "type": "array"
+          },
+          "held_out_test": {
+            "default": "Keep test data untouched until the final assessment. Select changes on validation data.",
+            "title": "Held Out Test",
+            "type": "string"
+          }
+        },
+        "required": [
+          "objective",
+          "change",
+          "selection_rule",
+          "success_criterion",
+          "run_ids",
+          "evidence_ids"
+        ],
+        "title": "ExperimentSpec",
+        "type": "object"
+      }
+    }
+  }
+]
