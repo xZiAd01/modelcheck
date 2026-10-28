@@ -116,6 +116,8 @@ V1 B's matched-comparison case returned the correct accuracy difference using se
 
 V2 outputs use `submission/evaluations/v2/<fingerprint>/`. Progress writes use atomic replacement and checksummed traces; a trace committed before an interrupted progress write is recovered without repeating inference. Configuration mismatches and changed traces stop resumption. Failed attempts remain recorded.
 
+The latest resumption found **zero provider requests remaining** and stopped before inference. The five-request reserve is an execution policy, not an available balance. See [timestamped quota status](submission/QUOTA_STATUS.json). The recorded walkthrough remains usable without inference quota.
+
 A targeted rerun uses a separate result directory and does not replace full-suite scores:
 
 ```sh
@@ -138,6 +140,7 @@ Files and SQLite state stay local. **Live AI review sends questions, bounded too
 
 - [Six-slide presentation](submission/ModelCheck_Capstone.pptx)
 - [Demo walkthrough](submission/DEMO_GUIDE.md)
+- [Demo video and captions](submission/demo/README.md)
 - [Implementation map](submission/IMPLEMENTATION.md)
 - [Evaluation analysis](submission/ERROR_ANALYSIS.md)
 - [Security evidence](submission/SECURITY.md)

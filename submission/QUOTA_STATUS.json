@@ -1,10 +1,27 @@
 {
   "date": "2026-10-28",
-  "checked_at": "2026-10-28T17:01:17.344279+00:00",
+  "checked_at": "2026-10-28T19:51:22.394108+00:00",
   "free_model_daily_requests": {
-    "used": 45,
+    "used": 51,
     "limit": 50,
-    "remaining": 5
+    "remaining": 0
   },
-  "policy": "Five provider requests reserved for the demo; no paid inference or purchases."
+  "policy": "Start an evaluation review only with at least 13 requests remaining: eight maximum plus five reserved. No paid inference or purchases.",
+  "resumption": {
+    "v1_exit_code": 2,
+    "v1_stop_reason": "quota_reserve",
+    "v2_exit_code": 2,
+    "v2_stop_reason": "v1_incomplete",
+    "new_live_reviews": 0
+  },
+  "previous_check": {
+    "date": "2026-10-28",
+    "checked_at": "2026-10-28T17:01:17.344279+00:00",
+    "free_model_daily_requests": {
+      "used": 45,
+      "limit": 50,
+      "remaining": 5
+    },
+    "policy": "Five provider requests reserved for the demo; no paid inference or purchases."
+  }
 }

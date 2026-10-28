@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ModelCheck demo walkthrough</title>
+<style>
+  :root { color-scheme: light; font-family: system-ui, sans-serif; color: #203033; background: #f5f6f0; }
+  body { margin: 0 auto; max-width: 76rem; padding: clamp(1rem, 4vw, 3rem); line-height: 1.6; }
+  h1 { font-size: clamp(1.75rem, 4vw, 2.5rem); line-height: 1.2; }
+  p { max-width: 75ch; }
+  video { display: block; width: 100%; height: auto; background: #203033; border-radius: .5rem; }
+  a { color: #225d56; text-underline-offset: .2em; }
+  :focus-visible { outline: 3px solid #225d56; outline-offset: 4px; }
+</style>
+<main>
+  <h1>ModelCheck demo walkthrough</h1>
+  <p>Synthetic comparison → recorded v1 review → manual proposal → approval → download.</p>
+  <video controls preload="metadata" aria-label="ModelCheck browser demonstration with English captions">
+    <source src="ModelCheck_walkthrough.mp4" type="video/mp4">
+    <track kind="captions" src="ModelCheck_walkthrough.vtt" srclang="en" label="English" default>
+    Your browser cannot play this video. <a href="ModelCheck_walkthrough.mp4">Download the MP4</a>.
+  </video>
+  <p>This silent recording replays an earlier v1 review and exercises the current approval handler. It sends no model requests and does not demonstrate new live v2 inference.</p>
+  <p><a href="ModelCheck_walkthrough.mp4" download>Download video</a> · <a href="ModelCheck_walkthrough.vtt" download>Download captions</a> · <a href="README.md">Workflow and playback instructions</a></p>
+</main>
+</html>

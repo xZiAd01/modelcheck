@@ -4,7 +4,7 @@ Executed 0 of 36 reviews; 36 remain pending.
 
 Stop reason: v1_incomplete.
 
-Five provider requests remain reserved for the demo.
+Reserve policy: start a review only with at least 13 requests remaining (eight maximum plus five for the demo). This policy does not guarantee the provider has requests available.
 
 | Configuration | Executed | Passed |
 |---|---:|---:|

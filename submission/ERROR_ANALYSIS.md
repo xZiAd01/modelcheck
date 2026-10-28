@@ -4,6 +4,8 @@ Executed 12 of 36 scheduled reviews; 24 remain pending.
 
 Quota-aware execution reserves five requests for the live demo.
 
+The latest resumption found zero requests remaining and stopped before inference. All 12 original outcomes and traces remain unchanged. V2 remained gated on v1 completion; no new live outcome is available from this session. See QUOTA_STATUS.json for the timestamped allowance check.
+
 | Configuration | Executed | Passed |
 |---|---:|---:|
 | A | 6 | 6 |

@@ -171,7 +171,7 @@ def write_outputs(out,rows,meta,stop_reason=None):
       'results':{c:{'attempted':sum(r['config']==c for r in attempted),'passed':sum(r['config']==c and r['passed'] is True for r in attempted)} for c in meta['configs']},
       'stop_reason':stop_reason,'limitation':'One fresh trial per task. Pending rows are not executed evaluations; results are specific to the recorded runtime version and fingerprint.'}
     atomic_json(out/'summary.json',summary)
-    lines=[f"# {meta['runtime_version']} evaluation coverage",'',f"Executed {len(attempted)} of {len(rows)} reviews; {summary['pending']} remain pending.",'',f"Stop reason: {stop_reason or 'complete'}.",'','Five provider requests remain reserved for the demo.','', '| Configuration | Executed | Passed |','|---|---:|---:|']
+    lines=[f"# {meta['runtime_version']} evaluation coverage",'',f"Executed {len(attempted)} of {len(rows)} reviews; {summary['pending']} remain pending.",'',f"Stop reason: {stop_reason or 'complete'}.",'','Reserve policy: start a review only with at least 13 requests remaining (eight maximum plus five for the demo). This policy does not guarantee the provider has requests available.','', '| Configuration | Executed | Passed |','|---|---:|---:|']
     for c,result in summary['results'].items():lines.append(f"| {c} | {result['attempted']} | {result['passed']} |")
     lines+=['','## Failures and pending coverage','']+[f"- {r['config']} / {r['task']}: {r['failed_checks'] or r['status']}" for r in rows if r['passed'] is not True]
     atomic_write(out/'COVERAGE.md','\n'.join(lines)+'\n')

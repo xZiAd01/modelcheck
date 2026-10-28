@@ -1,0 +1,41 @@
+WEBVTT
+
+00:00.000 --> 00:04.000
+ModelCheck reviews binary-classification experiment exports.
+This walkthrough uses synthetic samples.
+
+00:04.000 --> 00:10.500
+The sample inspection calculates metrics through MCP tools.
+No model request is needed for these calculations.
+
+00:10.500 --> 00:18.000
+Candidate accuracy is 85%, versus a 90% baseline.
+Web recall falls from 90% to 50%; studio recall rises to 100%.
+
+00:18.000 --> 00:21.500
+Load the recorded AI review.
+This replays an earlier v1 result without sending a model request.
+
+00:21.500 --> 00:29.000
+The review is labeled “Recorded AI review · v1”.
+Its findings cite measured tool evidence.
+
+00:29.000 --> 00:35.500
+Prediction exports cannot prove the test set was never used for tuning.
+The interface flags that unsupported claim in the original response.
+
+00:35.500 --> 00:43.500
+Draft a manual follow-up experiment.
+Choose changes on validation data and keep the test set held out.
+
+00:43.500 --> 00:50.000
+Review the exact specification and approval digest.
+Nothing is saved until approval.
+
+00:50.000 --> 00:56.500
+Approve the specification.
+The application saves exactly one experiment JSON file.
+
+00:56.500 --> 01:11.500
+Download the approved experiment JSON.
+This is a replay-and-approval demo, not a new live v2 evaluation.

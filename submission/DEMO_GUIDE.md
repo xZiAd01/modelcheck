@@ -2,6 +2,10 @@
 
 The eight-minute walkthrough covers the review workflow, architecture, evaluation and security evidence.
 
+## Video fallback
+
+The [browser recording](demo/ModelCheck_walkthrough.mp4) shows the synthetic comparison, a captured v1 review, a manual follow-up proposal and a fresh approval/save/download workflow. It sends no model requests. The recording has no audio; [English captions and a playback page](demo/README.md) are included. The current allowance check reports zero requests remaining, so use this fallback if live inference is unavailable.
+
 ## Setup
 
 From the project directory, run `uv run modelcheck serve`, or open `Launch.command` on macOS. The interface is at <http://127.0.0.1:8787>. Live review uses the key in `.env`; recorded review is available without a provider request and is labeled in the interface.
