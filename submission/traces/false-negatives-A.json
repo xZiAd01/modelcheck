@@ -1,0 +1,120 @@
+{
+  "task": {
+    "id": "false-negatives",
+    "sample": "comparison",
+    "prompt": "Inspect run-2 false negatives on source web and report the count and example IDs.",
+    "tools": [
+      "inspect_error_slice"
+    ],
+    "error_count": 5
+  },
+  "config": "A",
+  "run": {
+    "status": "completed",
+    "mode": "live",
+    "bundle_id": "b_59838ae2c289ea7709858885",
+    "events": [
+      {
+        "kind": "model_request",
+        "elapsed": 0.521,
+        "model": "nvidia/nemotron-3.5-lightning:free"
+      },
+      {
+        "kind": "tool_call",
+        "elapsed": 4.795,
+        "tool": "inspect_error_slice",
+        "args": {
+          "run_id": "run-2",
+          "source": "web",
+          "bundle_id": "b_59838ae2c289ea7709858885",
+          "kind": "fn"
+        }
+      },
+      {
+        "kind": "tool_result",
+        "elapsed": 4.804,
+        "tool": "inspect_error_slice",
+        "evidence_id": "e_9b3d38ebfcfd897e3623a95f"
+      },
+      {
+        "kind": "model_request",
+        "elapsed": 4.805,
+        "model": "nvidia/nemotron-3.5-lightning:free"
+      },
+      {
+        "kind": "completed",
+        "elapsed": 12.44
+      }
+    ],
+    "evidence": [
+      {
+        "evidence_id": "e_9b3d38ebfcfd897e3623a95f",
+        "tool": "inspect_error_slice",
+        "result": {
+          "run_id": "run-2",
+          "kind": "fn",
+          "source": "web",
+          "count": 5,
+          "sample_ids": [
+            "img-021",
+            "img-023",
+            "img-025",
+            "img-027",
+            "img-029"
+          ],
+          "offset": 0,
+          "has_more": false
+        }
+      }
+    ],
+    "usage": {
+      "requests": 2,
+      "input_tokens": 3793,
+      "output_tokens": 584,
+      "actual_cost": 0.0,
+      "estimated_cost": 0
+    },
+    "served_models": [
+      "nvidia/nemotron-3.5-lightning:free",
+      "nvidia/nemotron-3.5-lightning:free"
+    ],
+    "report": {
+      "summary": "Inspected false negatives (fn) for run-2 on source web within bundle b_59838ae2c289ea7709858885. Found 5 false-negative examples.",
+      "findings": [
+        {
+          "statement": "Run-2 produced 5 false negatives on the web source; example IDs are img-021, img-023, img-025, img-027, img-029.",
+          "severity": "info",
+          "issue_codes": [
+            "FN_web_run2"
+          ],
+          "evidence_ids": [
+            "e_9b3d38ebfcfd897e3623a95f"
+          ]
+        }
+      ],
+      "limitations": [
+        "Inspection limited to at most 20 sample IDs; no further slices beyond those provided.",
+        "Source metadata (e.g., 'web') is taken from run description and may not be independently verified."
+      ]
+    },
+    "seconds": 12.44
+  },
+  "checks": [
+    {
+      "check": "completed_report",
+      "passed": true
+    },
+    {
+      "check": "called:inspect_error_slice",
+      "passed": true
+    },
+    {
+      "check": "known_error_slice",
+      "passed": true
+    },
+    {
+      "check": "no_unapproved_file",
+      "passed": true
+    }
+  ]
+}

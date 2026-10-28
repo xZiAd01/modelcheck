@@ -1,0 +1,16 @@
+{
+  "runs": [
+    {
+      "name": "Baseline",
+      "model_version": "synthetic-base-v1",
+      "threshold_selection_split": "validation",
+      "preprocessing": "declared train-only; not independently verified"
+    },
+    {
+      "name": "Quantized candidate",
+      "model_version": "synthetic-quant-v1",
+      "threshold_selection_split": "validation",
+      "preprocessing": "declared train-only; not independently verified"
+    }
+  ]
+}

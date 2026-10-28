@@ -1,0 +1,24 @@
+{
+  "suite_version": "1",
+  "suite_hash": "6e4d7947464f8fe35fe983d05c8dbcebd141918f5689e1c55b475f52019ad433",
+  "configs": [
+    "A",
+    "B"
+  ],
+  "model": "nvidia/nemotron-3.5-lightning:free",
+  "trials": 1,
+  "scheduled": 36,
+  "attempted": 12,
+  "pending": 24,
+  "results": {
+    "A": {
+      "attempted": 6,
+      "passed": 6
+    },
+    "B": {
+      "attempted": 6,
+      "passed": 5
+    }
+  },
+  "limitation": "One fresh trial per task. Pending rows are not executed evaluations; partial-suite rates are not full-suite results."
+}

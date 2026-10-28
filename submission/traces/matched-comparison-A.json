@@ -1,0 +1,344 @@
+{
+  "task": {
+    "id": "matched-comparison",
+    "sample": "comparison",
+    "prompt": "Check whether these runs are comparable and calculate the accuracy delta. Cite population and metric evidence.",
+    "tools": [
+      "inspect_manifest",
+      "compare_runs"
+    ],
+    "comparison": true
+  },
+  "config": "A",
+  "run": {
+    "status": "completed",
+    "mode": "live",
+    "bundle_id": "b_ea07da155fa3f3def03dc93a",
+    "events": [
+      {
+        "kind": "model_request",
+        "elapsed": 0.345,
+        "model": "nvidia/nemotron-3.5-lightning:free"
+      },
+      {
+        "kind": "tool_call",
+        "elapsed": 3.496,
+        "tool": "inspect_manifest",
+        "args": {
+          "bundle_id": "b_ea07da155fa3f3def03dc93a"
+        }
+      },
+      {
+        "kind": "tool_result",
+        "elapsed": 3.505,
+        "tool": "inspect_manifest",
+        "evidence_id": "e_198f73053edfd0d4bbc5491e"
+      },
+      {
+        "kind": "model_request",
+        "elapsed": 3.506,
+        "model": "nvidia/nemotron-3.5-lightning:free"
+      },
+      {
+        "kind": "tool_call",
+        "elapsed": 6.564,
+        "tool": "compare_runs",
+        "args": {
+          "bundle_id": "b_ea07da155fa3f3def03dc93a"
+        }
+      },
+      {
+        "kind": "tool_result",
+        "elapsed": 6.573,
+        "tool": "compare_runs",
+        "evidence_id": "e_4370adcd09ba9bc12aff730a"
+      },
+      {
+        "kind": "model_request",
+        "elapsed": 6.575,
+        "model": "nvidia/nemotron-3.5-lightning:free"
+      },
+      {
+        "kind": "completed",
+        "elapsed": 25.234
+      }
+    ],
+    "evidence": [
+      {
+        "evidence_id": "e_198f73053edfd0d4bbc5491e",
+        "tool": "inspect_manifest",
+        "result": {
+          "status": "ready",
+          "findings": [],
+          "coverage": [
+            {
+              "run_id": "run-1",
+              "matched": 40,
+              "total": 40,
+              "fraction": 1.0
+            },
+            {
+              "run_id": "run-2",
+              "matched": 40,
+              "total": 40,
+              "fraction": 1.0
+            }
+          ],
+          "test_samples": 40,
+          "sources": [
+            "studio",
+            "web"
+          ],
+          "runs": [
+            {
+              "id": "run-1",
+              "name": "Baseline",
+              "hash": "d6b2a1b8aa7084b3c8558500f80e01daa56f370c64945fea77325dabf44a8bfb",
+              "metadata": {
+                "model_version": "synthetic-base-v1",
+                "threshold_selection_split": "validation",
+                "preprocessing": "declared train-only; not independently verified"
+              }
+            },
+            {
+              "id": "run-2",
+              "name": "Quantized candidate",
+              "hash": "c7b39df4b8397ed43fd65eb112bf6a173856d40b792f6cb0f0b5c244bd635acc",
+              "metadata": {
+                "model_version": "synthetic-quant-v1",
+                "threshold_selection_split": "validation",
+                "preprocessing": "declared train-only; not independently verified"
+              }
+            }
+          ],
+          "manifest_hash": "fa7b5181b3370677aa00a7a19b9a7a11f9dfbaf42a99f048df0ef5c2517beb4f",
+          "synthetic": true,
+          "limits": "ID/group/exact-hash checks cannot certify preprocessing, near duplicates, or the complete training pipeline."
+        }
+      },
+      {
+        "evidence_id": "e_4370adcd09ba9bc12aff730a",
+        "tool": "compare_runs",
+        "result": {
+          "baseline": {
+            "run_id": "run-1",
+            "source": null,
+            "counts": {
+              "tn": 18,
+              "fp": 2,
+              "fn": 2,
+              "tp": 18
+            },
+            "n": 40,
+            "total": 40,
+            "coverage": 1.0,
+            "population": "full test set",
+            "accuracy": 0.9,
+            "precision": 0.9,
+            "recall": 0.9,
+            "f1": 0.9,
+            "undefined_reason": "Null metrics have a zero denominator; null does not mean zero."
+          },
+          "candidate": {
+            "run_id": "run-2",
+            "source": null,
+            "counts": {
+              "tn": 19,
+              "fp": 1,
+              "fn": 5,
+              "tp": 15
+            },
+            "n": 40,
+            "total": 40,
+            "coverage": 1.0,
+            "population": "full test set",
+            "accuracy": 0.85,
+            "precision": 0.9375,
+            "recall": 0.75,
+            "f1": 0.8333333333333334,
+            "undefined_reason": "Null metrics have a zero denominator; null does not mean zero."
+          },
+          "deltas": {
+            "accuracy": -0.050000000000000044,
+            "precision": 0.03749999999999998,
+            "recall": -0.15000000000000002,
+            "f1": -0.06666666666666665
+          },
+          "slices": [
+            {
+              "source": "studio",
+              "n": 20,
+              "baseline": {
+                "run_id": "run-1",
+                "source": "studio",
+                "counts": {
+                  "tn": 9,
+                  "fp": 1,
+                  "fn": 1,
+                  "tp": 9
+                },
+                "n": 20,
+                "total": 20,
+                "coverage": 1.0,
+                "population": "full test set",
+                "accuracy": 0.9,
+                "precision": 0.9,
+                "recall": 0.9,
+                "f1": 0.9,
+                "undefined_reason": "Null metrics have a zero denominator; null does not mean zero."
+              },
+              "candidate": {
+                "run_id": "run-2",
+                "source": "studio",
+                "counts": {
+                  "tn": 9,
+                  "fp": 1,
+                  "fn": 0,
+                  "tp": 10
+                },
+                "n": 20,
+                "total": 20,
+                "coverage": 1.0,
+                "population": "full test set",
+                "accuracy": 0.95,
+                "precision": 0.9090909090909091,
+                "recall": 1.0,
+                "f1": 0.9523809523809523,
+                "undefined_reason": "Null metrics have a zero denominator; null does not mean zero."
+              }
+            },
+            {
+              "source": "web",
+              "n": 20,
+              "baseline": {
+                "run_id": "run-1",
+                "source": "web",
+                "counts": {
+                  "tn": 9,
+                  "fp": 1,
+                  "fn": 1,
+                  "tp": 9
+                },
+                "n": 20,
+                "total": 20,
+                "coverage": 1.0,
+                "population": "full test set",
+                "accuracy": 0.9,
+                "precision": 0.9,
+                "recall": 0.9,
+                "f1": 0.9,
+                "undefined_reason": "Null metrics have a zero denominator; null does not mean zero."
+              },
+              "candidate": {
+                "run_id": "run-2",
+                "source": "web",
+                "counts": {
+                  "tn": 10,
+                  "fp": 0,
+                  "fn": 5,
+                  "tp": 5
+                },
+                "n": 20,
+                "total": 20,
+                "coverage": 1.0,
+                "population": "full test set",
+                "accuracy": 0.75,
+                "precision": 1.0,
+                "recall": 0.5,
+                "f1": 0.6666666666666666,
+                "undefined_reason": "Null metrics have a zero denominator; null does not mean zero."
+              }
+            }
+          ],
+          "interpretation": "Deltas are candidate minus baseline, in fraction units (multiply by 100 for percentage points). This is descriptive, not a causal or significance test."
+        }
+      }
+    ],
+    "usage": {
+      "requests": 3,
+      "input_tokens": 7377,
+      "output_tokens": 1042,
+      "actual_cost": 0.0,
+      "estimated_cost": 0
+    },
+    "served_models": [
+      "nvidia/nemotron-3.5-lightning:free",
+      "nvidia/nemotron-3.5-lightning:free",
+      "nvidia/nemotron-3.5-lightning:free"
+    ],
+    "report": {
+      "summary": "Runs run-1 (baseline) and run-2 (quantized candidate) are fully comparable: both cover the entire 40\u2011sample test set (coverage\u202f1.0) and share the same population. The candidate run shows a \u22125\u202fpercentage\u2011point drop in accuracy (\u22120.05 fraction) relative to the baseline.",
+      "findings": [
+        {
+          "statement": "Accuracy delta (candidate minus baseline) = \u22120.05 ( \u22125\u202fpp ).",
+          "severity": "warning",
+          "issue_codes": [
+            "ACC_DELTA"
+          ],
+          "evidence_ids": [
+            "e_4370adcd09ba9bc12aff730a"
+          ]
+        },
+        {
+          "statement": "Both runs have full test\u2011set coverage (40/40 samples) and the same population, making them comparable for metric comparison.",
+          "severity": "info",
+          "issue_codes": [
+            "POP_COMPARABLE"
+          ],
+          "evidence_ids": [
+            "e_198f73053edfd0d4bbc5491e",
+            "e_4370adcd09ba9bc12aff730a"
+          ]
+        },
+        {
+          "statement": "Per\u2011source analysis: studio slice accuracy stays at 0.95 (candidate) vs 0.90 (baseline); web slice accuracy drops from 0.90 to 0.75.",
+          "severity": "warning",
+          "issue_codes": [
+            "SLIDE_WEB"
+          ],
+          "evidence_ids": [
+            "e_4370adcd09ba9bc12aff730a"
+          ]
+        },
+        {
+          "statement": "Recall drops from 0.90 to 0.75 overall and from 1.0 to 0.5 on the web slice; F1 falls from 0.90 to 0.833 overall and 0.667 on the web slice.",
+          "severity": "info",
+          "issue_codes": [
+            "RECALL_F1_DROP"
+          ],
+          "evidence_ids": [
+            "e_4370adcd09ba9bc12aff730a"
+          ]
+        }
+      ],
+      "limitations": [
+        "Manifest and comparison data are synthetic; provenance of preprocessing is not independently verified.",
+        "Deltas are descriptive fractions, not statistical significance tests.",
+        "Error\u2011slice inspection was not performed beyond the per\u2011source counts already returned by compare_runs."
+      ]
+    },
+    "seconds": 25.23
+  },
+  "checks": [
+    {
+      "check": "completed_report",
+      "passed": true
+    },
+    {
+      "check": "called:inspect_manifest",
+      "passed": true
+    },
+    {
+      "check": "called:compare_runs",
+      "passed": true
+    },
+    {
+      "check": "matched_population_delta",
+      "passed": true
+    },
+    {
+      "check": "no_unapproved_file",
+      "passed": true
+    }
+  ]
+}

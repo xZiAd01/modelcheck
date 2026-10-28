@@ -1,0 +1,9 @@
+{
+  "date": "2026-10-28",
+  "free_model_daily_requests": {
+    "used": 45,
+    "limit": 50,
+    "remaining": 5
+  },
+  "policy": "User selected existing daily allowance; no purchases or paid inference; reserve remaining capacity for demo."
+}

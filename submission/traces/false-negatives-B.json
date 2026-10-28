@@ -1,0 +1,193 @@
+{
+  "task": {
+    "id": "false-negatives",
+    "sample": "comparison",
+    "prompt": "Inspect run-2 false negatives on source web and report the count and example IDs.",
+    "tools": [
+      "inspect_error_slice"
+    ],
+    "error_count": 5
+  },
+  "config": "B",
+  "run": {
+    "status": "completed",
+    "mode": "live",
+    "bundle_id": "b_e9c13765ae3a31e6fb04f776",
+    "events": [
+      {
+        "kind": "model_request",
+        "elapsed": 0.46,
+        "model": "nvidia/nemotron-3.5-lightning:free"
+      },
+      {
+        "kind": "tool_call",
+        "elapsed": 4.998,
+        "tool": "inspect_manifest",
+        "args": {
+          "bundle_id": "b_e9c13765ae3a31e6fb04f776"
+        }
+      },
+      {
+        "kind": "tool_result",
+        "elapsed": 5.007,
+        "tool": "inspect_manifest",
+        "evidence_id": "e_256ccbc3cb184b05bdd22a8d"
+      },
+      {
+        "kind": "model_request",
+        "elapsed": 5.008,
+        "model": "nvidia/nemotron-3.5-lightning:free"
+      },
+      {
+        "kind": "tool_call",
+        "elapsed": 7.05,
+        "tool": "inspect_error_slice",
+        "args": {
+          "source": "web",
+          "kind": "fn",
+          "run_id": "run-2",
+          "bundle_id": "b_e9c13765ae3a31e6fb04f776"
+        }
+      },
+      {
+        "kind": "tool_result",
+        "elapsed": 7.058,
+        "tool": "inspect_error_slice",
+        "evidence_id": "e_f8dae8d39adfc73d6b6ca7ee"
+      },
+      {
+        "kind": "model_request",
+        "elapsed": 7.059,
+        "model": "nvidia/nemotron-3.5-lightning:free"
+      },
+      {
+        "kind": "completed",
+        "elapsed": 15.88
+      }
+    ],
+    "evidence": [
+      {
+        "evidence_id": "e_256ccbc3cb184b05bdd22a8d",
+        "tool": "inspect_manifest",
+        "result": {
+          "status": "ready",
+          "findings": [],
+          "coverage": [
+            {
+              "run_id": "run-1",
+              "matched": 40,
+              "total": 40,
+              "fraction": 1.0
+            },
+            {
+              "run_id": "run-2",
+              "matched": 40,
+              "total": 40,
+              "fraction": 1.0
+            }
+          ],
+          "test_samples": 40,
+          "sources": [
+            "studio",
+            "web"
+          ],
+          "runs": [
+            {
+              "id": "run-1",
+              "name": "Baseline",
+              "hash": "d6b2a1b8aa7084b3c8558500f80e01daa56f370c64945fea77325dabf44a8bfb",
+              "metadata": {
+                "model_version": "synthetic-base-v1",
+                "threshold_selection_split": "validation",
+                "preprocessing": "declared train-only; not independently verified"
+              }
+            },
+            {
+              "id": "run-2",
+              "name": "Quantized candidate",
+              "hash": "c7b39df4b8397ed43fd65eb112bf6a173856d40b792f6cb0f0b5c244bd635acc",
+              "metadata": {
+                "model_version": "synthetic-quant-v1",
+                "threshold_selection_split": "validation",
+                "preprocessing": "declared train-only; not independently verified"
+              }
+            }
+          ],
+          "manifest_hash": "fa7b5181b3370677aa00a7a19b9a7a11f9dfbaf42a99f048df0ef5c2517beb4f",
+          "synthetic": true,
+          "limits": "ID/group/exact-hash checks cannot certify preprocessing, near duplicates, or the complete training pipeline."
+        }
+      },
+      {
+        "evidence_id": "e_f8dae8d39adfc73d6b6ca7ee",
+        "tool": "inspect_error_slice",
+        "result": {
+          "run_id": "run-2",
+          "kind": "fn",
+          "source": "web",
+          "count": 5,
+          "sample_ids": [
+            "img-021",
+            "img-023",
+            "img-025",
+            "img-027",
+            "img-029"
+          ],
+          "offset": 0,
+          "has_more": false
+        }
+      }
+    ],
+    "usage": {
+      "requests": 3,
+      "input_tokens": 6785,
+      "output_tokens": 835,
+      "actual_cost": 0.0,
+      "estimated_cost": 0
+    },
+    "served_models": [
+      "nvidia/nemotron-3.5-lightning:free",
+      "nvidia/nemotron-3.5-lightning:free",
+      "nvidia/nemotron-3.5-lightning:free"
+    ],
+    "report": {
+      "summary": "Inspected run-2 false negatives on the web source for bundle b_e9c13765ae3a31e6fb04f776. The error slice returned a count of 5 false-negative samples with associated IDs.",
+      "findings": [
+        {
+          "statement": "Run-2 false negatives on source web: count 5, example IDs img-021, img-023, img-025, img-027, img-029.",
+          "severity": "info",
+          "issue_codes": [
+            "fn_web"
+          ],
+          "evidence_ids": [
+            "e_f8dae8d39adfc73d6b6ca7ee"
+          ]
+        }
+      ],
+      "limitations": [
+        "Manifest indicates synthetic data; preprocessing not independently verified.",
+        "Coverage checks show both runs matched 40/40 samples, but error\u2011slice provenance is limited to the inspected slice only.",
+        "Overlap or completeness of the training pipeline cannot be certified from the available data."
+      ]
+    },
+    "seconds": 15.88
+  },
+  "checks": [
+    {
+      "check": "completed_report",
+      "passed": true
+    },
+    {
+      "check": "called:inspect_error_slice",
+      "passed": true
+    },
+    {
+      "check": "known_error_slice",
+      "passed": true
+    },
+    {
+      "check": "no_unapproved_file",
+      "passed": true
+    }
+  ]
+}
