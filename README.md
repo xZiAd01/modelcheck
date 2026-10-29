@@ -4,6 +4,7 @@
 
 - **Track:** 2 · Your harness
 - **Author / team:** Zeyad Alghamdi · solo project
+- **Course:** [Advanced Agentic AI Systems Engineering - SDAIA Academy](https://github.com/sdaiaacademy/agentic-ai/)
 - **Default model:** nvidia/nemotron-3.5-lightning:free through OpenRouter
 - **Delivery:** local English web application, synthetic samples and CSV/JSON uploads
 - **Submission:** [public GitHub repository](https://github.com/xZiAd01/modelcheck)
@@ -429,4 +430,4 @@ uv run python scripts/package.py
 
 Packaging excludes credentials, runtime data, environments, locks and private build files.
 
-Course reference: SDAIA Academy, [Agentic AI Systems Engineering](https://github.com/SDAIAAcademy/agentic-ai), snapshot e950ba2f14b47deb6c30a586a6d4d5b77944e37d. The loop, MCP bridge, context controls, permissions and A/B design draw on the course’s Days 1–4 patterns.
+Course reference: [Advanced Agentic AI Systems Engineering - SDAIA Academy](https://github.com/sdaiaacademy/agentic-ai/), snapshot e950ba2f14b47deb6c30a586a6d4d5b77944e37d. The loop, MCP bridge, context controls, permissions and A/B design draw on the course’s Days 1–4 patterns.
